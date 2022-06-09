@@ -1,0 +1,66 @@
+Reading city data... Done.
+
+Number of cities: 758
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : Minneapolis
+
+Searching for path from La Crosse to Minneapolis...
+Target found: Minneapolis 44.98 -93.27
+
+Route found: La Crosse -> Winona -> Minneapolis
+Distance: 137.2 miles
+
+Total nodes generated  : 449
+Nodes left in frontier: 444
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r     
+-----------------------------
+
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : New York
+
+Searching for path from La Crosse to New York...
+Target found: New York 40.67 -73.94
+
+Route found: La Crosse -> Milwaukee -> New York
+Distance: 1030.2 miles
+
+Total nodes generated  : 55266
+Nodes left in frontier: 54775
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+-----------------------------
+
+Please enter name of start city (0 to quit): New York
+Please enter name of end city (0 to quit)  : London
+
+Searching for path from New York to London...
+Target found: London 51.52 -0.1
+
+Route found: New York -> Boston -> Glasgow -> Birmingham -> London
+Distance: 4571.2 miles
+
+Total nodes generated  : 10585823
+Nodes left in frontier: 10504479
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : Mexico City
+
+Searching for path from La Crosse to Mexico City...
+Target found: Mexico City 19.43 -99.14
+
+Route found: La Crosse -> La Crescent -> Dallas -> Austin -> Reynosa -> Chimalhuacan -> Mexico City
+Distance: 1899.8 miles
+
+Total nodes generated  : 191287
+Nodes left in frontier: 189583
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: 0
+
+Goodbye.

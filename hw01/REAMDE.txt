@@ -1,0 +1,15 @@
+This directory contains the following materials:
+
+[1] A PDF with instructions for the first assignment.
+
+[2] A folder of <inputData>, which contains two files, specifying data about cities.  Both are in the format described in the PDF.  One is very small, and meant for testing during the development process.  The other is much larger.  For full points, your code needs to be able to handle both files, scaling to even very long search-paths.
+
+[3] A folder of <sampleRuns>, which shows the output for a variety of cities.  Your own output, for the same search-paths, should be very similar.  While the number of nodes encountered during search may be somewhat different depending upon implementation, they should be within the same order of magnitude.  The distances along shortest paths found (and in most every case the actual optimal path reported) SHOULD be the same.
+
+These runs are as follows:
+
+Runs labeled as "NonOptimized" are the results of running A* search as given in the text pseudocode exactly.  In such runs, partial paths (although not final solutions) may contain repeated nodes.  In the "Optimized" versions, no such partial paths are ever considered during search, and so the total number of nodes encountered is reduced (in some cases by several orders of magnitude).
+
+Runs labeled as "allDetails" print out some extra input.  I have created these simply so you can see how my own implementations of the algorithm, optimized or not, do search on the smaller input file.  If you are stuck on implementing/testing/debugging your code, you may find these useful.  I DO NOT EXPECT you to produce output that looks like this in your final code.  Your final output should resemble that in the other files.
+
+Finally, I know that "REAMDE" is mis-spelled.  Google it.

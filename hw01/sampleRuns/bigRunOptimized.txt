@@ -1,0 +1,151 @@
+Reading city data... Done.
+
+Number of cities: 758
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : Minneapolis
+
+Searching for path from La Crosse to Minneapolis...
+Target found: Minneapolis 44.98 -93.27
+
+Route found: La Crosse -> Winona -> Minneapolis
+Distance: 137.2 miles
+
+Total nodes generated  : 445
+Nodes left in frontier: 440
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+-----------------------------
+
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : New York
+
+Searching for path from La Crosse to New York...
+Target found: New York 40.67 -73.94
+
+Route found: La Crosse -> Milwaukee -> New York
+Distance: 1030.2 miles
+
+Total nodes generated  : 2814
+Nodes left in frontier: 2788
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+-----------------------------
+
+Please enter name of start city (0 to quit): New York
+Please enter name of end city (0 to quit)  : London
+
+Searching for path from New York to London...
+Target found: London 51.52 -0.1
+
+Route found: New York -> Boston -> Glasgow -> Birmingham -> London
+Distance: 4571.2 miles
+
+Total nodes generated  : 297915
+Nodes left in frontier: 295550
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+-----------------------------
+
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : Mexico City
+
+Searching for path from La Crosse to Mexico City...
+Target found: Mexico City 19.43 -99.14
+
+Route found: La Crosse -> La Crescent -> Dallas -> Austin -> Reynosa -> Chimalhuacan -> Mexico City
+Distance: 1899.8 miles
+
+Total nodes generated  : 3724
+Nodes left in frontier: 3690
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+-----------------------------
+
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : London
+
+Searching for path from La Crosse to London...
+Target found: London 51.52 -0.1
+
+Route found: La Crosse -> Ottawa -> Montreal -> Dublin -> Birmingham -> London
+Distance: 5363.9 miles
+
+Total nodes generated  : 222531041
+Nodes left in frontier: 220718030
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+-----------------------------
+
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : Paris
+
+Searching for path from La Crosse to Paris...
+
+Target found: Paris 48.86 2.34
+
+Route found: La Crosse -> Ottawa -> Montreal -> Dublin -> Paris
+Distance: 5576.8 miles
+
+Total nodes generated  : 291568289
+Nodes left in frontier: 1413732
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+-----------------------------
+
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : Barcelona (Venezuela)
+
+Searching for path from La Crosse to Barcelona (Venezuela)...
+
+Target found: Barcelona (Venezuela) 10.13 -64.72
+
+Route found: La Crosse -> Chicago -> Jacksonville -> Santiago (Dominican Republic) -> Santo Domingo -> Barcelona (Venezuela)
+Distance: 3212.8 miles
+
+Total nodes generated  : 202080
+Nodes left in frontier: 2252
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+-----------------------------
+
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : Vancouver
+
+Searching for path from La Crosse to Vancouver...
+
+Target found: Vancouver 49.28 -123.13
+
+Route found: La Crosse -> Winona -> Minneapolis -> Vancouver
+Distance: 1790.4 miles
+
+Total nodes generated  : 2739
+Nodes left in frontier: 63
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: r
+-----------------------------
+
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : Sao Paulo
+
+Searching for path from La Crosse to Sao Paulo...
+
+Target found: Sao Paulo -23.53 -46.63
+
+Route found: La Crosse -> Chicago -> Jacksonville -> Santiago (Dominican Republic) -> Santo Domingo -> Barcelona (Venezuela) -> Manaus -> Ribeirao Preto -> Sao Paulo
+Distance: 6240.7 miles
+
+Total nodes generated  : 133853198
+Nodes left in frontier: 3606345
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: 0
+
+Goodbye.

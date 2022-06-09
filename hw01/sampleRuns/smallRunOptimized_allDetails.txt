@@ -1,0 +1,35 @@
+Reading city data... Done.
+
+Number of cities: 4
+Please enter name of start city (0 to quit): La Crosse
+Please enter name of end city (0 to quit)  : Minneapolis
+
+Searching for path from La Crosse to Minneapolis...
+Expanding: La Crosse (parent: La Crosse) f = 129.2671107070302 = 0.0 + 129.2671107070302
+   Adding: Winona (parent: La Crosse) f = 132.91377707467385 = 31.6 + 101.31377707467385
+   Adding: La Crescent (parent: La Crosse) f = 130.6404953252714 = 5.0 + 125.6404953252714
+Expanding: La Crescent (parent: La Crosse) f = 130.6404953252714 = 5.0 + 125.6404953252714
+   Adding: Minneapolis (parent: La Crescent) f = 147.0 = 147.0 + 0.0
+   Adding: Winona (parent: La Crescent) f = 133.81377707467385 = 32.5 + 101.31377707467385
+   NOT adding: La Crosse (already in path to La Crescent)
+Expanding: Winona (parent: La Crosse) f = 132.91377707467385 = 31.6 + 101.31377707467385
+   Adding: Minneapolis (parent: Winona) f = 147.6 = 147.6 + 0.0
+   Adding: La Crescent (parent: Winona) f = 184.7404953252714 = 59.1 + 125.6404953252714
+   NOT adding: La Crosse (already in path to Winona)
+Expanding: Winona (parent: La Crescent) f = 133.81377707467385 = 32.5 + 101.31377707467385
+   Adding: Minneapolis (parent: Winona) f = 148.5 = 148.5 + 0.0
+   NOT adding: La Crescent (already in path to Winona)
+   NOT adding: La Crosse (already in path to Winona)
+Expanding: Minneapolis (parent: La Crescent) f = 147.0 = 147.0 + 0.0
+Target found: Minneapolis 44.98 -93.27
+
+Route found: La Crosse -> La Crescent -> Minneapolis
+Distance: 147.0 miles
+
+Total nodes generated  : 8
+Nodes left in frontier: 3
+
+-----------------------------
+Enter 0 to quit, or any other keys to search again: 0
+
+Goodbye.
