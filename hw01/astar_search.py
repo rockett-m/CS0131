@@ -107,7 +107,7 @@ def input_handling(graph, src_or_dst, var): # input_handling(graph, 'Starting', 
     return city
 
 
-def prompt_user(graph): # 'S' = starting city; 'G' = goal city
+def prompt_user(graph):  # 'S' = starting city; 'G' = goal city
 
     print('[MSG] cities are parsed and graph is created\n')
 
@@ -126,7 +126,7 @@ def astar_search(S, G, graph, city_dict):
     lat2 = float(city_dict[G][0])
     lat1 = float(city_dict[S][0])
 
-    lon1, lon2, lat1, lat2 = map(radians, [lon1, lon2, lat1, lat2]) # convert from degrees to radians
+    lon1, lon2, lat1, lat2 = map(radians, [lon1, lon2, lat1, lat2])  # convert from degrees to radians
 
     lon_dist = lon2 - lon1
     lat_dist = lat2 - lat1
@@ -134,8 +134,9 @@ def astar_search(S, G, graph, city_dict):
     a = pow(sin(lat_dist/2), 2) + cos(lat1) * cos(lat2) * pow(sin(lon_dist/2), 2)
 
     c = 2 * atan2(sqrt(a), sqrt(1-a))
-    dist = c * 3958.8  # radius of the earth in miles (6371 km)
+    d_total = c * 3958.8  # radius of the earth in miles (6371 km)
 
+    print(f"Distance between starting city: '{S}' and goal city: '{G}' is {d_total} miles.")
 
 
 if __name__ == "__main__":
