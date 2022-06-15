@@ -6,7 +6,8 @@ import re
 from collections import OrderedDict
 import networkx as nx
 from math import *
-
+import matplotlib.pyplot as plt
+import scipy
 
 def parse_file():
     file = sys.argv[1]
@@ -71,7 +72,7 @@ def read_file(file):
     return city_dict, dist_dict
 
 
-def create_graph(city_dict: dict, dist_dict: dict):
+def create_graph(city_dict: dict, dist_dict: dict, debug=False):
 
     graph = nx.Graph()
 
@@ -86,12 +87,14 @@ def create_graph(city_dict: dict, dist_dict: dict):
 
             city1 = keys
             city2 = elem[0]
-            dist = elem[1]
+            dist = float(elem[1])
 
-            graph.add_edge(city1, city2, length=dist)
+            graph.add_edge(city1, city2, distance=dist)
 
-    # print(f'{graph}\n{graph.nodes}\n{graph.edges}\n')
-
+    # print(f"{graph}\n{graph.nodes}\n{graph.edges}\n")
+    if debug:
+        print(graph.edges(data=True))
+        # print(graph.nodes(data=True))
     return graph
 
 
@@ -118,13 +121,13 @@ def calc_direct_distance(graph, S, G, debug=False):
     return d_total
 
 
-def update_edge_weights(graph, debug=False):
+def update_edge_weights(graph, debug=False):  # already there from input data
 
     for edge in graph.edges:
 
         dist = calc_direct_distance(graph, S=edge[0], G=edge[1])
 
-        graph.edges[edge]['length'] = dist
+        graph.edges[edge]['distance'] = dist
 
         if debug:
             print(f'edge: {edge}: graph.edges[edge]: {graph.edges[edge]}')
@@ -158,16 +161,72 @@ def prompt_user(graph):  # 'S' = starting city; 'G' = goal city
     return S, G
 
 
+def astar_search(graph):
+
+    # nx.draw(graph)
+    nx.draw_networkx(graph, arrows=True, with_labels=True)
+    plt.show()
+    """
+    
+    graph.nodes[k]
+
+    
+    edge = ''
+    h = graph.edges[edge]['distance']
+    
+    """
+
+
+
+
+# implement best first search
+# current path cost and heuristic value
+
+# dictionary to keep track of what is seen
+# store g the
+
+# f = g + h
+# f - decide who to choose next - lowest values
+# h = straight line
+# g = cost to get there from the start
+
+# start has g=0
+# end has h=0
+
+# keep track of current dist taken so far
+# g+h = f - decide which to
+
+# shortest f value
+# sum actual dist   g
+# heuristic dist
+
+# frontier ordered by f value from smallest to largest
+# check heapify
+
+# for each child, what is the f and what is the g value
+
 if __name__ == "__main__":
 
     file = parse_file()
 
     city_dict, dist_dict = read_file(file)
 
-    graph = create_graph(city_dict, dist_dict)
+    graph = create_graph(city_dict, dist_dict, debug=True)
 
-    update_edge_weights(graph, debug=True)
+    astar_search(graph)
+    # update_edge_weights(graph, debug=True)
 
     S, G = prompt_user(graph)
 
     calc_direct_distance(graph, S, G, debug=True)
+
+    # heuristic is straight line distance S -> G    # underestimate unless straight path somehow
+
+    # g is actual drive distance    # real cost
+
+    # f combining the h and the g
+
+        # start has g=0
+        # end has h=0
+
+    # edges are g values
