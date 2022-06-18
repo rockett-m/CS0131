@@ -1,0 +1,79 @@
+# name latitude longitude
+La Crosse 43.8 -91.24
+La Crescent 43.83 -91.3
+Winona 44.06 -91.67
+Minneapolis 44.98 -93.27
+# distances
+La Crosse, La Crescent: 5.0
+La Crosse, Winona: 31.6
+La Crescent, Winona: 27.5
+La Crescent, Minneapolis: 142.0
+Winona, Minneapolis: 116.0
+
+
+La Crosse -> La Crescent -> Minneapolis
+          5.0           142.0
+
+Distance: 147 mi
+    g(c)
+
+
+S = La Crosse
+G = Minneapolis
+
+
+
+La Crosse -> La Crescent
+La Crosse -> Winona
+
+La Crescent, Winona
+La Crescent, Minneapolis
+
+Winona, Minneapolis
+
+
+
+La Crosse -> La Crescent -> Winona -> Minneapolis   = 31.6 + 27.5 + 142.0 = 201.1
+La Crosse -> La Crescent -> Minneapolis             = 5.0 + 142.0         = 147.0
+
+La Crosse -> Winona -> La Crescent -> Minneapolis   = 31.6 + 27.5 + 142.0 = 201.1
+La Crosse -> Winona -> Minneapolis                  = 31.6 + 116.0        = 147.6
+
+
+             La Crosse
+   5.0       /      \    31.6
+            /  27.5  \
+   La Crescent ---- Winona
+           \          /
+   142.0    \        /    116.0
+           Minneapolis
+
+
+Straight line distance
+La Crosse -> Minneapolis = 128.0
+
+La Crosse -> La Crescent -> Winona -> Minneapolis   = 5.0 + 27.5 + 116.0 = 148.5
+La Crosse    {h(c) = 128.0; g(c) = 0;     f(c) = 128.0}
+La Crescent  {h(c) = 142.0; g(c) = 5.0;   f(c) = 147.0}
+Winona       {h(c) = 116.0; g(c) = 147.0; f(c) = 273.0}
+Minneapolis  {h(c) = 0;     g(c) = 201.1; f(c) = 201.1}
+
+La Crosse -> Winona -> La Crescent -> Minneapolis   = 31.6 + 27.5 + 142.0 = 201.1
+La Crosse    {h(c) = 128.0; g(c) = 0;     f(c) = 128.0}
+Winona       {h(c) = 116.0; g(c) = 31.6;  f(c) = 147.6}
+La Crescent  {h(c) = 142.0; g(c) = 59.1;  f(c) = 201.1}
+Minneapolis  {h(c) = 0;     g(c) = 201.1; f(c) = 201.1}
+
+La Crosse -> La Crescent -> Minneapolis             = 5.0 + 142.0         = 147.0
+La Crosse    {h(c) = 128.0; g(c) = 0;     f(c) = 128.0}
+La Crescent  {h(c) = 142.0; g(c) = 5.0;   f(c) = 147.0}
+Minneapolis  {h(c) = 0;     g(c) = 147.0; f(c) = 147.0}
+
+La Crosse -> Winona -> Minneapolis                  = 31.6 + 116.0        = 147.6
+La Crosse    {h(c) = 128.0; g(c) = 0;     f(c) = 128.0}
+Winona       {h(c) = 116.0; g(c) = 31.6;  f(c) = 147.6}
+Minneapolis  {h(c) = 0;     g(c) = 147.6; f(c) = 147.6}
+
+
+Left in frontier: 3
+La Crosse, La Crescent, Minneapolis

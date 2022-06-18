@@ -246,9 +246,8 @@ class TreeNode:
         pathCost: returns (cost + 1) if supplied with node that has self as parent
             Note: will return arbitrarily large value if node has a different parent
     '''
-    def __init__(self, state, action=None, cost=0, parent_node=None):
+    def __init__(self, state, cost=0, parent_node=None):
         self.state = state
-        self.action = action
         self.cost = cost
         self.parent_node = parent_node
 
@@ -261,33 +260,11 @@ class TreeNode:
     def isGoal(self, G):
         return str(self) == str(G)
 
-    # def pathCost(self, next_node):
     def pathCost(self, next_node, g):
         if next_node.parent_node == self:
             return self.cost + g
 
         return math.inf
-
-    '''
-    In the basic version of the node class, actions all have the same cost (1 per step in search),
-    leading search to always default to breadth-first, since the priority queue will be ordered
-    by tree depth.  If some actions actually cost more than others, however, we could still order
-    by path-cost, without it being equivalent to tree-depth.  In such cases the best-first search
-    algorithm is then identical to Dijkstra's algorithm, searching for a shortest path according
-    to total action-cost.  
-
-    Here is an example in which going UP costs twice as much as other actions:
-    
-    def pathCost(self, next_node):
-        if next_node.parent == self:
-            if next_node.action == Action.UP:
-                return self.cost + 2
-            else:
-                return self.cost + 1
-        
-        return math.inf
-    '''
-
 
 
 def astar_search_sat(graph, S: str, G: str):
@@ -306,12 +283,11 @@ def astar_search_sat(graph, S: str, G: str):
         curr_node = heapq.heappop(frontier)
 
         if curr_node.isGoal(G):
-            print(curr_node.cost)
             return curr_node
 
         for children in graph.edges(curr_node.state):
             # parent_node = children[0]
-            child_node =  children[1]
+            child_node = children[1]
 
             h = calc_direct_distance(graph, S=child_node, G=G)
             g = graph.edges[children]["distance"]
@@ -320,47 +296,16 @@ def astar_search_sat(graph, S: str, G: str):
             if child_node not in visited_nodes:
                 child = TreeNode(state=child_node, cost=0, parent_node=curr_node)
 
-                # child.cost = node.pathCost(g)
                 child.cost = curr_node.pathCost(child, g)
                 city_paths_dict.update({child:child.cost})
 
-                # print(f"parent node: '{curr_node}'\nchild node:  '{child_node}'\n")
-
-                # print(f'child node: {child}')
-                # if (child not in visited_nodes) and (child not in frontier):
-                    # and child.cost < visited_nodes[child]):  # visited_nodes[child].cost
                 if (child not in visited_nodes) or (child in visited_nodes and child.cost < visited_nodes[child].cost):  # visited_nodes[child].cost
-                    # visited_nodes.update({child:f})  # {child:child.cost}
+                    visited_nodes.update({child:f})  # {child:child.cost}
                     heapq.heappush(frontier, child)
 
-        #
-        # for k,v in city_paths_dict.items():
-        #     print(k,v)
-        #
-        # print('\n')
+    return -1
+    # return None
 
-    return None
-
-"""
-
-    curr_neighbors = []
-    for node_neighbor in graph.edges(node):
-        edges_count += 1
-
-        parent_node =  node_neighbor[0]
-        current_node = node_neighbor[1]
-
-        if current_node not in visited_nodes:
-            nodes_viewed += 1
-            h = calc_direct_distance(graph, current_node, G)
-            g = graph.edges[node_neighbor]["distance"]
-            f = h + g
-
-            print(f"parent node: '{parent_node}'\nchild node:  '{current_node}'\nh: {h}\ng: {g}\nf: {f}\n")
-
-            frontier.put(current_node, block=f)  # only if shorter path
-    print(f'frontier: {frontier.queue}')
-"""
 
 def printSolution(solution_node):
     '''Prints out solution path from start-to-finish, after best-first-search.
@@ -382,71 +327,31 @@ def printSolution(solution_node):
         path = f'{path} -> {solution_path[i]}'
     print(path)
 
-# def a_star_search(graph, start, goal):
-#     # frontier = PriorityQueue()
-#     # frontier.put(start, 0)
-#     came_from = {start: None}
-#     cost_so_far = {start: 0}
-#
-#     while not frontier.empty():
-#         current = frontier.get()
-#
-#         if current == goal:
-#             break
-#
-#         for next in graph.neighbors(current):
-#             new_cost = cost_so_far[current] + graph.cost(current, next)
-#             if next not in cost_so_far or new_cost < cost_so_far[next]:
-#                 cost_so_far[next] = new_cost
-#                 priority = new_cost + heuristic(goal, next)
-#                 frontier.put(next, priority)
-#                 came_from[next] = current
-#
-#     return came_from, cost_so_far
 
+if __name__ == "__main__":
 
-"""
-def astar_search(graph, S: str, G: str):
+    file = parse_file()
 
-    # nx.draw(graph)
-    nx.draw_networkx(graph, arrows=True, with_labels=True)
-    plt.show()
+    city_dict, dist_dict = read_file(file)
 
-    
-    graph.nodes[k]
+    graph = create_graph(city_dict, dist_dict, debug=True)
 
-    
-    edge = ''
-    h = graph.edges[edge]['distance']
-    
-    current_nodes = [S]
-    visited_nodes = []
+    # astar_search(graph, S='La Crosse', G='Minneapolis')
+    # solution_node = astar_search_sat(graph, S='La Crosse', G='Minneapolis')
+    solution_node = astar_search_sat(graph, S='La Crosse', G='New York')
+    # solution_node = astar_search_sat(graph, S='New York', G='London')
 
+    printSolution(solution_node)
 
+    sys.exit()
+    # S, G = prompt_user(graph)
 
-    while len(current_nodes) > 0:
-        node = None
+    # astar_search(graph, S='La Crosse', G='Minneapolis')
+    # update_edge_weights(graph, debug=True)
 
-        for c in current_nodes:
-            if node == None
+    S, G = prompt_user(graph)
 
-
-    C = current city
-    for neighbor_node in graph.neighbors():
-        gC = calc_direct_distance(graph, S, C)
-        hC = calc_direct_distance(graph, C, G)
-        fC = gC + hC
-
-
-"""
-
-# class Node:
-#     def __init__(self):
-#         self.h = h
-#         self.g = g
-#         self.f = f
-
-
+    calc_direct_distance(graph, S, G, debug=True)
 
 
 
@@ -476,40 +381,15 @@ def astar_search(graph, S: str, G: str):
 
 # for each child, what is the f and what is the g value
 
-if __name__ == "__main__":
+# heuristic is straight line distance S -> G    # underestimate unless straight path somehow
 
-    file = parse_file()
+# g is actual drive distance    # real cost
 
-    city_dict, dist_dict = read_file(file)
+# f combining the h and the g
 
-    graph = create_graph(city_dict, dist_dict, debug=True)
+    # start has g=0
+    # end has h=0
 
-    # astar_search(graph, S='La Crosse', G='Minneapolis')
-    # solution_node = astar_search_sat(graph, S='La Crosse', G='Minneapolis')
-    solution_node = astar_search_sat(graph, S='La Crosse', G='New York')
-    # solution_node = astar_search_sat(graph, S='New York', G='London')
-
-    printSolution(solution_node)
-
-    sys.exit()
-    # S, G = prompt_user(graph)
-
-    # astar_search(graph, S='La Crosse', G='Minneapolis')
-    # update_edge_weights(graph, debug=True)
-
-    S, G = prompt_user(graph)
-
-    calc_direct_distance(graph, S, G, debug=True)
-
-    # heuristic is straight line distance S -> G    # underestimate unless straight path somehow
-
-    # g is actual drive distance    # real cost
-
-    # f combining the h and the g
-
-        # start has g=0
-        # end has h=0
-
-    # edges are g values
+# edges are g values
 
 
