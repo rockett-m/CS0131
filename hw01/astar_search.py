@@ -261,10 +261,10 @@ class TreeNode:
     def isGoal(self, G):
         return str(self) == str(G)
 
-    def pathCost(self, next_node):
+    # def pathCost(self, next_node):
+    def pathCost(self, next_node, g):
         if next_node.parent_node == self:
-            distance = calc_direct_distance(graph, self.state, G)
-            return self.cost + distance
+            return self.cost + g
 
         return math.inf
 
@@ -294,60 +294,73 @@ def astar_search_sat(graph, S: str, G: str):
 
     print(f'starting city: {S}\tgoal city: {G}\n')
 
-    node = TreeNode(state=S)
-    frontier = [node]
+    curr_node = TreeNode(state=S)
 
+    frontier = [curr_node]
     heapq.heapify(frontier)
-    visited_nodes = {str(node): 0}
 
-    city_paths_dict = {str(node): 0}
+    visited_nodes = {str(curr_node): 0}
+    city_paths_dict = {str(curr_node): 0}
 
     while frontier:
-        node = heapq.heappop(frontier)
-        if node.isGoal(G):
-            return node
+        curr_node = heapq.heappop(frontier)
 
-        for node_neighbor in graph.edges(node):
-            parent_node =  node_neighbor[0]
-            child_node =   node_neighbor[1]
+        if curr_node.isGoal(G):
+            print(curr_node.cost)
+            return curr_node
+
+        for children in graph.edges(curr_node.state):
+            # parent_node = children[0]
+            child_node =  children[1]
 
             h = calc_direct_distance(graph, S=child_node, G=G)
-            g = graph.edges[node_neighbor]["distance"]
+            g = graph.edges[children]["distance"]
             f = h + g
 
-            child = TreeNode(state=child_node, cost=g, parent_node=parent_node)
+            if child_node not in visited_nodes:
+                child = TreeNode(state=child_node, cost=0, parent_node=curr_node)
 
-            child.cost = node.pathCost(child)
-            city_paths_dict.update({child:child.cost})
+                # child.cost = node.pathCost(g)
+                child.cost = curr_node.pathCost(child, g)
+                city_paths_dict.update({child:child.cost})
 
-            print(child)
-            if (child not in visited_nodes) or (child in visited_nodes and child.cost < visited_nodes[child]):  # visited_nodes[child].cost
-                visited_nodes.update({child:child.cost})
-                frontier.append(child)
+                # print(f"parent node: '{curr_node}'\nchild node:  '{child_node}'\n")
 
+                # print(f'child node: {child}')
+                # if (child not in visited_nodes) and (child not in frontier):
+                    # and child.cost < visited_nodes[child]):  # visited_nodes[child].cost
+                if (child not in visited_nodes) or (child in visited_nodes and child.cost < visited_nodes[child].cost):  # visited_nodes[child].cost
+                    # visited_nodes.update({child:f})  # {child:child.cost}
+                    heapq.heappush(frontier, child)
+
+        #
+        # for k,v in city_paths_dict.items():
+        #     print(k,v)
+        #
+        # print('\n')
 
     return None
 
-    """
+"""
 
-        curr_neighbors = []
-        for node_neighbor in graph.edges(node):
-            edges_count += 1
+    curr_neighbors = []
+    for node_neighbor in graph.edges(node):
+        edges_count += 1
 
-            parent_node =  node_neighbor[0]
-            current_node = node_neighbor[1]
+        parent_node =  node_neighbor[0]
+        current_node = node_neighbor[1]
 
-            if current_node not in visited_nodes:
-                nodes_viewed += 1
-                h = calc_direct_distance(graph, current_node, G)
-                g = graph.edges[node_neighbor]["distance"]
-                f = h + g
+        if current_node not in visited_nodes:
+            nodes_viewed += 1
+            h = calc_direct_distance(graph, current_node, G)
+            g = graph.edges[node_neighbor]["distance"]
+            f = h + g
 
-                print(f"parent node: '{parent_node}'\nchild node:  '{current_node}'\nh: {h}\ng: {g}\nf: {f}\n")
+            print(f"parent node: '{parent_node}'\nchild node:  '{current_node}'\nh: {h}\ng: {g}\nf: {f}\n")
 
-                frontier.put(current_node, block=f)  # only if shorter path
-        print(f'frontier: {frontier.queue}')
-    """
+            frontier.put(current_node, block=f)  # only if shorter path
+    print(f'frontier: {frontier.queue}')
+"""
 
 def printSolution(solution_node):
     '''Prints out solution path from start-to-finish, after best-first-search.
@@ -359,16 +372,15 @@ def printSolution(solution_node):
        solution_node: a TreeNode returned by best_first_search()
     '''
     solution_path = [solution_node]
-    parent = solution_node.parent
-    while parent != None:
-        solution_path.insert(0, parent)
-        parent = parent.parent
+    parent_node = solution_node.parent_node
+    while parent_node != None:
+        solution_path.insert(0, parent_node)
+        parent_node = parent_node.parent_node
 
-    print(solution_path[0])
+    path = solution_path[0]
     for i in range(1, len(solution_path)):
-        print('Action {}: {}'.format(i, solution_path[i].action))
-        print(solution_path[i])
-
+        path = f'{path} -> {solution_path[i]}'
+    print(path)
 
 # def a_star_search(graph, start, goal):
 #     # frontier = PriorityQueue()
@@ -473,7 +485,9 @@ if __name__ == "__main__":
     graph = create_graph(city_dict, dist_dict, debug=True)
 
     # astar_search(graph, S='La Crosse', G='Minneapolis')
-    solution_node = astar_search_sat(graph, S='La Crosse', G='Minneapolis')
+    # solution_node = astar_search_sat(graph, S='La Crosse', G='Minneapolis')
+    solution_node = astar_search_sat(graph, S='La Crosse', G='New York')
+    # solution_node = astar_search_sat(graph, S='New York', G='London')
 
     printSolution(solution_node)
 
