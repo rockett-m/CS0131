@@ -1,7 +1,25 @@
+# the code includes unoptimized and optimized functions
+# all that is needed is the command below with two sample input cities
+
 # run as ./astar_search.py ./inputData/cities02.txt
 # > La Crosse
 # > New York
 
+
+# Key program data structs
+
+# it seems like too many nodes are getting generated but I was not able to solve this in time
+
+# I use the node data structure to keep track of f weights and check to the goal
+
+# the visited nodes dict is checked and updated if lower weights are available
+
+# the graph is built with edges that have the distance between nodes
+# it retrieves edge distances and looks at neighboring nodes
+
+# the frontier holds next potential nodes with their f values, sorted lowest to highest
+
+# parsing, prompts, and file I/O should be simple and irrelevant to algo functionality
 
 
 # References
@@ -17,20 +35,54 @@ https://www.geeksforgeeks.org/heap-queue-or-heapq-in-python/
 https://medium.com/nerd-for-tech/graph-traversal-in-python-bfs-dfs-dijkstra-a-star-parallel-comparision-dd4132ec323a
 https://stackabuse.com/courses/graphs-in-python-theory-and-implementation/lessons/dijkstras-algorithm-vs-a-algorithm
 
+help in several office hours with Professor Allen and Ellery
 
-# sample run
 
-starting city: La Crosse	goal city: New York
+# sample runs
+
+[MSG] cities are parsed and graph is created
+Please enter a Starting city, 'S', and press 'Enter' when done
+La Crosse
+Starting city, 'S': 'La Crosse' found in graph
+
+Please enter a Goal city, 'G', and press 'Enter' when done
+Minneapolis
+Goal city, 'G': 'Minneapolis' found in graph
+
+Total nodes generated: 37
+Nodes left in frontier: 12
+@timefn: astar_search_unopt took 0.0 seconds.
+optimal path:
+La Crosse -> La Crescent -> Minneapolis
+distance traveled:	147.0 miles
+
+Total nodes generated: 37
+Nodes left in frontier: 12
+@timefn: astar_search_opt took 0.0 seconds.
+optimal path:
+La Crosse -> La Crescent -> Minneapolis
+distance traveled:	147.0 miles
+
+
+
+[MSG] cities are parsed and graph is created
+Please enter a Starting city, 'S', and press 'Enter' when done
+La Crosse
+Starting city, 'S': 'La Crosse' found in graph
+Please enter a Goal city, 'G', and press 'Enter' when done
+New York
+Goal city, 'G': 'New York' found in graph
+
 Total nodes generated: 19577395
 Nodes left in frontier: 9744698
-@timefn: astar_search_unopt took 45.62 seconds.
+@timefn: astar_search_unopt took 51.66 seconds.
 optimal path:
 La Crosse -> Milwaukee -> New York
 distance traveled:	1030.2 miles
-starting city: La Crosse	goal city: New York
+
 Total nodes generated: 19577395
 Nodes left in frontier: 9744698
-@timefn: astar_search_opt took 44.27 seconds.
+@timefn: astar_search_opt took 46.95 seconds.
 optimal path:
 La Crosse -> Milwaukee -> New York
 distance traveled:	1030.2 miles

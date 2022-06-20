@@ -30,10 +30,10 @@ def parse_file():
     if not os.path.isfile(file):
         print(f'file not found: {file}\n')
         sys.exit()
-    else:
-        with open(file, 'r') as fi:
-            for line in fi:
-                print(line)
+    # else:
+    #     with open(file, 'r') as fi:
+    #         for line in fi:
+    #             print(line)
     return file
 
 
@@ -200,10 +200,7 @@ class TreeNode:
     def __str__(self):
         return str(self.state)
 
-    def isGoal(self, G, frontier, visited_nodes):
-        nodes_left = len(frontier)
-        total_nodes = len(visited_nodes) + nodes_left
-        print(f'Total nodes generated: {total_nodes}\nNodes left in frontier: {nodes_left}\n')
+    def isGoal(self, G):
         return str(self) == str(G)
 
     def pathCost(self, next_node, g):
@@ -213,46 +210,8 @@ class TreeNode:
 
 
 @timeit
+
 def astar_search_unopt(graph, S: str, G: str):
-
-    print(f'\nstarting city: {S}\tgoal city: {G}\n')
-
-    curr_node = TreeNode(state=S)
-
-    frontier = [curr_node]
-    heapq.heapify(frontier)
-
-    visited_nodes = {str(curr_node): 0}
-
-    while frontier:
-        curr_node = heapq.heappop(frontier)
-
-        if curr_node.isGoal(G, frontier, visited_nodes):
-            return curr_node
-
-        for children in graph.edges(curr_node.state):
-            child_node = children[1]  # parent_node = children[0]
-
-            if child_node not in visited_nodes:
-
-                h = calc_direct_distance(graph, S=child_node, G=G)
-                g = graph.edges[children]["distance"]
-                f = h + g
-
-                child = TreeNode(state=child_node, cost=0, parent_node=curr_node)
-                child.cost = curr_node.pathCost(child, g)
-
-                if (child not in visited_nodes) or (child in visited_nodes and g < visited_nodes[child].cost):
-                    visited_nodes.update({child:f})
-                    heapq.heappush(frontier, child)
-
-    return -1  # path not found
-
-
-@timeit
-def astar_search_opt(graph, S: str, G: str):
-
-    print(f'\nstarting city: {S}\tgoal city: {G}\n')
 
     curr_node = TreeNode(state=S)
 
@@ -265,7 +224,10 @@ def astar_search_opt(graph, S: str, G: str):
     while frontier:
         curr_node = heapq.heappop(frontier)
 
-        if curr_node.isGoal(G, frontier, visited_nodes):
+        if curr_node.isGoal(G):
+            nodes_left = len(frontier)
+            total_nodes = len(visited_nodes) + nodes_left
+            print(f'Total nodes generated: {total_nodes}\nNodes left in frontier: {nodes_left}\n')
             return curr_node
 
         for child_node in graph.neighbors(curr_node.state):
@@ -285,6 +247,45 @@ def astar_search_opt(graph, S: str, G: str):
                     heapq.heappush(frontier, child)
 
     return -1
+
+
+@timeit
+def astar_search_opt(graph, S: str, G: str):
+
+    curr_node = TreeNode(state=S)
+
+    frontier = [curr_node]
+    heapq.heapify(frontier)
+
+    visited_nodes = {str(curr_node): 0}
+
+    while frontier:
+        curr_node = heapq.heappop(frontier)
+
+        if curr_node.isGoal(G):
+            nodes_left = len(frontier)
+            total_nodes = len(visited_nodes) + nodes_left
+            print(f'Total nodes generated: {total_nodes}\nNodes left in frontier: {nodes_left}\n')
+            return curr_node
+
+        for children in graph.edges(curr_node.state):
+            child_node = children[1]  # parent_node = children[0]
+
+            if child_node not in visited_nodes:
+
+                h = calc_direct_distance(graph, S=child_node, G=G)
+                g = graph.edges[children]["distance"]
+                f = h + g
+
+                child = TreeNode(state=child_node, cost=0, parent_node=curr_node)
+                child.cost = curr_node.pathCost(child, g)
+
+                if (child not in visited_nodes) or (child in visited_nodes and g < visited_nodes[child].cost):
+                    # if (child not in visited_nodes) or (child in visited_nodes and g < visited_nodes[child]):
+                    visited_nodes.update({child:g})
+                    heapq.heappush(frontier, child)
+
+    return -1  # path not found
 
 
 def printSolution(solution_node):
@@ -319,13 +320,15 @@ if __name__ == "__main__":
 
     graph = create_graph(city_dict, dist_dict, debug=False)
 
+    # """ prompt version
     S, G = prompt_user(graph)
-
-    solution_node_opt = astar_search_opt(graph, S, G)
-    printSolution(solution_node_opt)
 
     solution_node_unopt = astar_search_unopt(graph, S, G)
     printSolution(solution_node_unopt)
+
+    solution_node_opt = astar_search_opt(graph, S, G)
+    printSolution(solution_node_opt)
+    # """
 
     """ manual bypass input run
     solution_node_unopt = astar_search_unopt(graph, S='La Crosse', G='New York')
@@ -333,7 +336,7 @@ if __name__ == "__main__":
 
     solution_node_opt = astar_search_opt(graph, S='La Crosse', G='New York')
     printSolution(solution_node_opt)
-    """
+    # """
 
     sys.exit()
 
