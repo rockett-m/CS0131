@@ -1,17 +1,28 @@
 #!/usr/bin/python3
-import heapq
 import math
 import os
 import sys
 import re
+import time
 from collections import OrderedDict
-from operator import itemgetter
-from queue import PriorityQueue
+from functools import wraps
 import networkx as nx
 from math import *
-import matplotlib.pyplot as plt
 import heapq
-import scipy
+
+# run as ./astar_search.py ./inputData/cities02.txt
+# > La Crosse
+# > New York
+
+def timeit(func):
+    @wraps(func)
+    def measure_time(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print("@timefn: {} took {} seconds.\n".format(func.__name__, round(end_time - start_time, 2)))
+        return result
+    return measure_time
 
 
 def parse_file():
@@ -154,74 +165,6 @@ def prompt_user(graph):  # 'S' = starting city; 'G' = goal city
     return S, G
 
 
-def astar_search(graph, S: str, G: str):
-
-    print(f'starting city: {S}\tgoal city: {G}\n')
-
-    h = calc_direct_distance(graph, S, G)
-    g = 0
-    f = h + g
-
-    # frontier = PriorityQueue()
-    frontier = PriorityQueue()
-    frontier.put(S, 0)
-
-
-    visited_nodes = []
-    total_distance = 0
-    nodes_viewed = 1
-    edges_count = 0
-
-    while not frontier.empty():  # not empty
-
-        node = frontier.get()  # smallest f value at front
-
-        visited_nodes.append(node)
-
-        print(f'node: {node}')
-        visited = [node]
-
-        if node == G:
-            print(f'goal found: {G}\ntotal distance: {total_distance}')
-            break
-
-        curr_neighbors = []
-        for node_neighbor in graph.edges(node):
-            edges_count += 1
-
-            parent_node =  node_neighbor[0]
-            current_node = node_neighbor[1]
-
-            if current_node not in visited_nodes:
-                nodes_viewed += 1
-                h = calc_direct_distance(graph, current_node, G)
-                g = graph.edges[node_neighbor]["distance"]
-                f = h + g
-
-                print(f"parent node: '{parent_node}'\nchild node:  '{current_node}'\nh: {h}\ng: {g}\nf: {f}\n")
-
-                frontier.put(current_node, block=f)  # only if shorter path
-        print(f'frontier: {frontier.queue}')
-
-
-    # find edge distance between each pair in visited nodes
-    # sum up for total distance
-
-    # for i
-    # graph.edges()
-
-    path = ' -> '.join(visited_nodes)
-    node_count = len(visited_nodes)
-    frontier_count = len(frontier.queue)
-    print(f'edges viewed: {edges_count}')
-
-    print(f'nodes calculated: {nodes_viewed}')
-
-    print(f'\n{node_count} nodes visited\n\n{frontier_count} nodes left in the frontier\n\n'
-          f'path:\t{path}\n\ntotal_distance: {total_distance} miles\n')
-    return visited_nodes, total_distance
-
-
 class TreeNode:
     '''Object for storing search-tree node data.
 
@@ -257,19 +200,22 @@ class TreeNode:
     def __str__(self):
         return str(self.state)
 
-    def isGoal(self, G):
+    def isGoal(self, G, frontier, visited_nodes):
+        nodes_left = len(frontier)
+        total_nodes = len(visited_nodes) + nodes_left
+        print(f'Total nodes generated: {total_nodes}\nNodes left in frontier: {nodes_left}\n')
         return str(self) == str(G)
 
     def pathCost(self, next_node, g):
         if next_node.parent_node == self:
             return self.cost + g
-
         return math.inf
 
 
-def astar_search_sat(graph, S: str, G: str):
+@timeit
+def astar_search_unopt(graph, S: str, G: str):
 
-    print(f'starting city: {S}\tgoal city: {G}\n')
+    print(f'\nstarting city: {S}\tgoal city: {G}\n')
 
     curr_node = TreeNode(state=S)
 
@@ -277,34 +223,68 @@ def astar_search_sat(graph, S: str, G: str):
     heapq.heapify(frontier)
 
     visited_nodes = {str(curr_node): 0}
-    city_paths_dict = {str(curr_node): 0}
 
     while frontier:
         curr_node = heapq.heappop(frontier)
 
-        if curr_node.isGoal(G):
+        if curr_node.isGoal(G, frontier, visited_nodes):
             return curr_node
 
         for children in graph.edges(curr_node.state):
-            # parent_node = children[0]
-            child_node = children[1]
-
-            h = calc_direct_distance(graph, S=child_node, G=G)
-            g = graph.edges[children]["distance"]
-            f = h + g
+            child_node = children[1]  # parent_node = children[0]
 
             if child_node not in visited_nodes:
+
+                h = calc_direct_distance(graph, S=child_node, G=G)
+                g = graph.edges[children]["distance"]
+                f = h + g
+
                 child = TreeNode(state=child_node, cost=0, parent_node=curr_node)
-
                 child.cost = curr_node.pathCost(child, g)
-                city_paths_dict.update({child:child.cost})
 
-                if (child not in visited_nodes) or (child in visited_nodes and child.cost < visited_nodes[child].cost):  # visited_nodes[child].cost
-                    visited_nodes.update({child:f})  # {child:child.cost}
+                if (child not in visited_nodes) or (child in visited_nodes and g < visited_nodes[child].cost):
+                    visited_nodes.update({child:f})
+                    heapq.heappush(frontier, child)
+
+    return -1  # path not found
+
+
+@timeit
+def astar_search_opt(graph, S: str, G: str):
+
+    print(f'\nstarting city: {S}\tgoal city: {G}\n')
+
+    curr_node = TreeNode(state=S)
+
+    frontier = [curr_node]
+    heapq.heapify(frontier)
+
+    visited_nodes = OrderedDict()
+    visited_nodes = {str(curr_node): 0}
+
+    while frontier:
+        curr_node = heapq.heappop(frontier)
+
+        if curr_node.isGoal(G, frontier, visited_nodes):
+            return curr_node
+
+        for child_node in graph.neighbors(curr_node.state):
+
+            if child_node not in visited_nodes:
+
+                h = calc_direct_distance(graph, S=child_node, G=G)
+                g = graph.edges[(curr_node.state, child_node)]['distance']
+                f = h + g
+
+                child = TreeNode(state=child_node, cost=0, parent_node=curr_node)
+                child.cost = curr_node.pathCost(child, g)
+
+                if (child.state not in visited_nodes.keys()) or (child.state in visited_nodes.keys() and g < visited_nodes[child.state].cost):
+
+                    visited_nodes.update({child:g})  # g or f
                     heapq.heappush(frontier, child)
 
     return -1
-    # return None
 
 
 def printSolution(solution_node):
@@ -316,16 +296,19 @@ def printSolution(solution_node):
        ----
        solution_node: a TreeNode returned by best_first_search()
     '''
+    if solution_node == -1:
+        print(f'no path found. Exiting...')
+        sys.exit()
     solution_path = [solution_node]
     parent_node = solution_node.parent_node
-    while parent_node != None:
+    while parent_node is not None:
         solution_path.insert(0, parent_node)
         parent_node = parent_node.parent_node
 
     path = solution_path[0]
     for i in range(1, len(solution_path)):
         path = f'{path} -> {solution_path[i]}'
-    print(path)
+    print(f'optimal path:\n\n{path}\n\ndistance traveled:\t{solution_node.cost} miles\n')
 
 
 if __name__ == "__main__":
@@ -334,24 +317,25 @@ if __name__ == "__main__":
 
     city_dict, dist_dict = read_file(file)
 
-    graph = create_graph(city_dict, dist_dict, debug=True)
-
-    # astar_search(graph, S='La Crosse', G='Minneapolis')
-    # solution_node = astar_search_sat(graph, S='La Crosse', G='Minneapolis')
-    solution_node = astar_search_sat(graph, S='La Crosse', G='New York')
-    # solution_node = astar_search_sat(graph, S='New York', G='London')
-
-    printSolution(solution_node)
-
-    sys.exit()
-    # S, G = prompt_user(graph)
-
-    # astar_search(graph, S='La Crosse', G='Minneapolis')
-    # update_edge_weights(graph, debug=True)
+    graph = create_graph(city_dict, dist_dict, debug=False)
 
     S, G = prompt_user(graph)
 
-    calc_direct_distance(graph, S, G, debug=True)
+    solution_node_opt = astar_search_opt(graph, S, G)
+    printSolution(solution_node_opt)
+
+    solution_node_unopt = astar_search_unopt(graph, S, G)
+    printSolution(solution_node_unopt)
+
+    """ manual bypass input run
+    solution_node_unopt = astar_search_unopt(graph, S='La Crosse', G='New York')
+    printSolution(solution_node_unopt)
+
+    solution_node_opt = astar_search_opt(graph, S='La Crosse', G='New York')
+    printSolution(solution_node_opt)
+    """
+
+    sys.exit()
 
 
 
@@ -391,5 +375,4 @@ if __name__ == "__main__":
     # end has h=0
 
 # edges are g values
-
 

@@ -1,4 +1,36 @@
+# run as ./astar_search.py ./inputData/cities02.txt
+# > La Crosse
+# > New York
+
+
+
 # References
-#     http://andrew.hedges.name/experiments/haversine/
-#     https://medium.com/@petehouston/calculate-distance-of-two-locations-on-earth-using-python-1501b1944d97
-#     http://avinashu.com/tutorial/pythontutorial/NetworkXBasics.html
+http://andrew.hedges.name/experiments/haversine/
+https://medium.com/@petehouston/calculate-distance-of-two-locations-on-earth-using-python-1501b1944d97
+http://avinashu.com/tutorial/pythontutorial/NetworkXBasics.html
+https://gist.github.com/rivergold/df4e77f1322cf4cb85910735f437059f
+https://www.redblobgames.com/pathfinding/a-star/implementation.html
+https://github.com/melkir/A-Star-Python/blob/master/Algorithms.py
+https://www.simplifiedpython.net/a-star-algorithm-python-tutorial
+https://networkx.org/documentation/stable/reference/classes/generated/networkx.Graph.neighbors.html
+https://www.geeksforgeeks.org/heap-queue-or-heapq-in-python/
+https://medium.com/nerd-for-tech/graph-traversal-in-python-bfs-dfs-dijkstra-a-star-parallel-comparision-dd4132ec323a
+https://stackabuse.com/courses/graphs-in-python-theory-and-implementation/lessons/dijkstras-algorithm-vs-a-algorithm
+
+
+# sample run
+
+starting city: La Crosse	goal city: New York
+Total nodes generated: 19577395
+Nodes left in frontier: 9744698
+@timefn: astar_search_unopt took 45.62 seconds.
+optimal path:
+La Crosse -> Milwaukee -> New York
+distance traveled:	1030.2 miles
+starting city: La Crosse	goal city: New York
+Total nodes generated: 19577395
+Nodes left in frontier: 9744698
+@timefn: astar_search_opt took 44.27 seconds.
+optimal path:
+La Crosse -> Milwaukee -> New York
+distance traveled:	1030.2 miles
