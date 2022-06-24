@@ -1,0 +1,10 @@
+This directory contains the following materials:
+
+[1] A PDF with instructions for the first assignment.
+
+[2] A folder of <inputData>, which contains three puzzle files, and three dictionary files.  Each puzzle file can be used with any of the dictionaries, although not every dictionary will lead to a successful solution of all puzzles.
+
+[3] A folder of <sampleRuns>, which shows the output for a variety of combinations of puzzles and dictionaries.  
+
+Runs labeled "noPreprocessing" are the results of running the search without doing the arc-consistency (AC-3) pre-processing.  Runs labeled as "withPreprocessing" reduce the domains of the variables by eliminating values that cannot be part of a consistent solution, and cause the search portion of the method to run much more quickly.
+

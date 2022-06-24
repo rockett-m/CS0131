@@ -1,0 +1,115 @@
+%java Solve xword01.txt dictionary_small.txt true
+
+8 words
+16 constraints
+
+Initial assignment and domain sizes:
+1-across = NO_VALUE (8 values possible)
+1-down = NO_VALUE (8 values possible)
+2-down = NO_VALUE (8 values possible)
+3-down = NO_VALUE (8 values possible)
+4-down = NO_VALUE (8 values possible)
+5-across = NO_VALUE (8 values possible)
+6-across = NO_VALUE (8 values possible)
+7-across = NO_VALUE (8 values possible)
+
+Doing arc-consistency pre-processing...
+
+Initial assignment with pre-processed domain sizes:
+1-across = NO_VALUE (2 values possible)
+1-down = NO_VALUE (2 values possible)
+2-down = NO_VALUE (2 values possible)
+3-down = NO_VALUE (2 values possible)
+4-down = NO_VALUE (2 values possible)
+5-across = NO_VALUE (2 values possible)
+6-across = NO_VALUE (2 values possible)
+7-across = NO_VALUE (2 values possible)
+
+SUCCESS! Solution found after 10 recursive calls to search.
+
+DEVELOP
+E E E R
+TORNADO
+R B T G
+ANOTHER
+C S E A
+THEOREM
+
+========================================
+
+%java Solve xword01.txt dictionary_medium.txt true
+
+8 words
+16 constraints
+
+Initial assignment and domain sizes:
+1-across = NO_VALUE (166 values possible)
+1-down = NO_VALUE (166 values possible)
+2-down = NO_VALUE (166 values possible)
+3-down = NO_VALUE (166 values possible)
+4-down = NO_VALUE (166 values possible)
+5-across = NO_VALUE (166 values possible)
+6-across = NO_VALUE (166 values possible)
+7-across = NO_VALUE (166 values possible)
+
+Doing arc-consistency pre-processing...
+
+Initial assignment with pre-processed domain sizes:
+1-across = NO_VALUE (149 values possible)
+1-down = NO_VALUE (149 values possible)
+2-down = NO_VALUE (153 values possible)
+3-down = NO_VALUE (155 values possible)
+4-down = NO_VALUE (90 values possible)
+5-across = NO_VALUE (153 values possible)
+6-across = NO_VALUE (155 values possible)
+7-across = NO_VALUE (90 values possible)
+
+SUCCESS! Solution found after 1829 recursive calls to search.
+
+DEVELOP
+E E E R
+TORNADO
+R B T G
+ANOTHER
+C S E A
+THEOREM
+
+========================================
+
+%java Solve xword01.txt dictionary_large.txt true
+
+8 words
+16 constraints
+
+Initial assignment and domain sizes:
+1-across = NO_VALUE (476 values possible)
+1-down = NO_VALUE (476 values possible)
+2-down = NO_VALUE (476 values possible)
+3-down = NO_VALUE (476 values possible)
+4-down = NO_VALUE (476 values possible)
+5-across = NO_VALUE (476 values possible)
+6-across = NO_VALUE (476 values possible)
+7-across = NO_VALUE (476 values possible)
+
+Doing arc-consistency pre-processing...
+
+Initial assignment with pre-processed domain sizes:
+1-across = NO_VALUE (474 values possible)
+1-down = NO_VALUE (474 values possible)
+2-down = NO_VALUE (476 values possible)
+3-down = NO_VALUE (470 values possible)
+4-down = NO_VALUE (330 values possible)
+5-across = NO_VALUE (476 values possible)
+6-across = NO_VALUE (470 values possible)
+7-across = NO_VALUE (330 values possible)
+
+SUCCESS! Solution found after 174 recursive calls to search.
+
+COMMITS
+O O L P
+MODELLI
+M E U N
+ILLUVIA
+T L I C
+SPINACH
+

@@ -1,0 +1,91 @@
+%java Solve xword00.txt dictionary_small.txt true
+
+4 words
+4 constraints
+
+Initial assignment and domain sizes:
+1-across = NO_VALUE (8 values possible)
+1-down = NO_VALUE (8 values possible)
+2-down = NO_VALUE (8 values possible)
+3-across = NO_VALUE (8 values possible)
+
+Doing arc-consistency pre-processing...
+
+Initial assignment with pre-processed domain sizes:
+1-across = NO_VALUE (2 values possible)
+1-down = NO_VALUE (2 values possible)
+2-down = NO_VALUE (3 values possible)
+3-across = NO_VALUE (3 values possible)
+
+SUCCESS! Solution found after 5 recursive calls to search.
+
+DEVELOP
+E     R
+V     O
+E     G
+L     R
+O     A
+PROGRAM
+
+========================================
+
+%java Solve xword00.txt dictionary_medium.txt true
+
+4 words
+4 constraints
+
+Initial assignment and domain sizes:
+1-across = NO_VALUE (166 values possible)
+1-down = NO_VALUE (166 values possible)
+2-down = NO_VALUE (166 values possible)
+3-across = NO_VALUE (166 values possible)
+
+Doing arc-consistency pre-processing...
+
+Initial assignment with pre-processed domain sizes:
+1-across = NO_VALUE (166 values possible)
+1-down = NO_VALUE (166 values possible)
+2-down = NO_VALUE (127 values possible)
+3-across = NO_VALUE (127 values possible)
+
+SUCCESS! Solution found after 5 recursive calls to search.
+
+BEACONS
+E     P
+A     I
+C     N
+O     A
+N     C
+SPINACH
+
+========================================
+
+%java Solve xword00.txt dictionary_large.txt true
+
+4 words
+4 constraints
+
+Initial assignment and domain sizes:
+1-across = NO_VALUE (476 values possible)
+1-down = NO_VALUE (476 values possible)
+2-down = NO_VALUE (476 values possible)
+3-across = NO_VALUE (476 values possible)
+
+Doing arc-consistency pre-processing...
+
+Initial assignment with pre-processed domain sizes:
+1-across = NO_VALUE (476 values possible)
+1-down = NO_VALUE (476 values possible)
+2-down = NO_VALUE (393 values possible)
+3-across = NO_VALUE (393 values possible)
+
+SUCCESS! Solution found after 5 recursive calls to search.
+
+BEACONS
+E     P
+A     I
+C     N
+O     A
+N     C
+SPINACH
+

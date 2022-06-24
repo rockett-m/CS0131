@@ -1,0 +1,78 @@
+%java Solve xword01.txt dictionary_small.txt
+
+8 words
+16 constraints
+
+Initial assignment and domain sizes:
+1-across = NO_VALUE (8 values possible)
+1-down = NO_VALUE (8 values possible)
+2-down = NO_VALUE (8 values possible)
+3-down = NO_VALUE (8 values possible)
+4-down = NO_VALUE (8 values possible)
+5-across = NO_VALUE (8 values possible)
+6-across = NO_VALUE (8 values possible)
+7-across = NO_VALUE (8 values possible)
+
+SUCCESS! Solution found after 648 recursive calls to search.
+
+DEVELOP
+E E E R
+TORNADO
+R B T G
+ANOTHER
+C S E A
+THEOREM
+
+========================================
+
+%java Solve xword01.txt dictionary_medium.txt 
+
+8 words
+16 constraints
+
+Initial assignment and domain sizes:
+1-across = NO_VALUE (166 values possible)
+1-down = NO_VALUE (166 values possible)
+2-down = NO_VALUE (166 values possible)
+3-down = NO_VALUE (166 values possible)
+4-down = NO_VALUE (166 values possible)
+5-across = NO_VALUE (166 values possible)
+6-across = NO_VALUE (166 values possible)
+7-across = NO_VALUE (166 values possible)
+
+SUCCESS! Solution found after 1741868 recursive calls to search.
+
+BEACONS
+E I V Y
+AIMLESS
+C L R T
+OVERSEE
+N S E M
+SYSTEMS
+
+========================================
+
+%java Solve xword01.txt dictionary_large.txt
+
+8 words
+16 constraints
+
+Initial assignment and domain sizes:
+1-across = NO_VALUE (476 values possible)
+1-down = NO_VALUE (476 values possible)
+2-down = NO_VALUE (476 values possible)
+3-down = NO_VALUE (476 values possible)
+4-down = NO_VALUE (476 values possible)
+5-across = NO_VALUE (476 values possible)
+6-across = NO_VALUE (476 values possible)
+7-across = NO_VALUE (476 values possible)
+
+SUCCESS! Solution found after 14427357 recursive calls to search.
+
+BEACONS
+E I V Y
+AIMLESS
+C L R T
+OVERSEE
+N S E M
+SYSTEMS
