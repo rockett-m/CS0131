@@ -11,6 +11,8 @@ from math import *
 import heapq
 import numpy as np
 
+from classes import Variable, Crossword
+
 global WIDTH, HEIGHT
 
 
@@ -56,8 +58,6 @@ def read_word_file(dict_file):
 
 
 def read_xword_file(xword_file):
-
-    # xword_dict = OrderedDict()
 
     with open(xword_file, 'r') as fi:
 
@@ -111,13 +111,17 @@ def read_xword_file(xword_file):
     return grid_words
 
 
-def crossword_solver(word_dict, grid_words):
+def crossword_solver(word_dict, grid_horz):
 
-    answer = grid_words.copy()
+    grid_vert = grid_horz.transpose()
+    crossword = Crossword(word_dict, grid_horz, grid_vert)
+
+
+    word = Variable(direction, length, x, y)
 
     # for word in word_dict.sorted():
     row_idx = 0
-    for row in grid_words:
+    for row in grid_horz:
 
         col_idx = streak = start_col_idx = end_col_idx = prev_item = prev_col_idx = 0
         for item in row:
@@ -127,12 +131,9 @@ def crossword_solver(word_dict, grid_words):
                 end_col_idx = col_idx - 1  # prior col - last letter location
                 print(f'streak {streak} over: begin @ {row_idx, start_col_idx} end @ {row_idx, end_col_idx}')
 
-                for word in word_dict.keys():
+                for word in word_dict.keys():  # fill in words that could fit
                     if len(word) == streak:
-                        
-
-            # elif (item == 0) and (streak == 0):  # don't care about 'X' without prior letters
-            #     start_col_idx = end_col_idx = 0
+                        pass
 
             elif item > 0:  # start of word or blank
 
@@ -150,13 +151,41 @@ def crossword_solver(word_dict, grid_words):
 
                     for word in word_dict.keys():
                         if len(word) == streak:
-
+                            pass
 
             prev_item = item
             prev_col_idx = col_idx
 
             col_idx += 1
         row_idx += 1
+
+
+
+
+    # for recursive, call backtrack from inside backtrack
+
+    # assignment aka solution says what each word should be - to each var
+
+    # every time backtrack is called, partial solution is called
+
+    # on outer loop, the entire solution is returned
+
+
+
+    # each var is say 1-down
+
+    # for each value in domain list - has to be same number of letters as blank
+
+    # violations - intersections have to work ok
+
+
+    # keep class for keeping track of variable
+
+
+
+    # do the same thing here
+
+
 
 
 if __name__ == "__main__":
@@ -167,9 +196,7 @@ if __name__ == "__main__":
 
     grid_words = read_xword_file(xword_file)  #  np matrix  with 2 = #;  1 = blank;  0 = X
 
-    crossword_solver(word_dict, grid_words)
-    # print_dict(word_dict)
-    # print_dict(xword_dict)
+    crossword_solver(word_dict, grid_horz=grid_words)
 
     sys.exit()
 
@@ -196,4 +223,14 @@ grid_words :
  [1. 0. 0. 0. 0. 0. 1.]
  [1. 0. 0. 0. 0. 0. 1.]
  [2. 1. 1. 1. 1. 1. 1.]]
+ 
+ grid_words_vert : 
+
+ [[2. 1. 1. 1. 1. 1. 2.]
+  [1. 0. 0. 0. 0. 0. 1.]
+  [1. 0. 0. 0. 0. 0. 1.]
+  [1. 0. 0. 0. 0. 0. 1.]
+  [1. 0. 0. 0. 0. 0. 1.]
+  [1. 0. 0. 0. 0. 0. 1.]
+  [2. 1. 1. 1. 1. 1. 1.]]
 """
