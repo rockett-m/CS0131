@@ -35,21 +35,21 @@ def print_dict(my_dict: dict):
 
 def parse_files():
     xword_file = sys.argv[1]
-    dict_file = sys.argv[2]
+    word_file = sys.argv[2]
 
-    for file in [xword_file, dict_file]:
+    for file in [xword_file, word_file]:
         if not os.path.isfile(file):
             print(f'file not found: {file}\n')
-            sys.exit()
+            sys.exit("run: python cons_solver.py xword00.txt dictionary_small.txt ")
 
-    return xword_file, dict_file
+    return xword_file, word_file
 
 
-def read_word_file(dict_file):
+def read_word_file(word_file):
 
     word_dict = OrderedDict()
 
-    with open(dict_file, 'r') as fi:
+    with open(word_file, 'r') as fi:
         for line in fi:
             line = line.strip()
             word_dict[line] = len(line)  # set word equal to word length
@@ -186,15 +186,29 @@ def crossword_solver(word_dict, grid_horz):
     # do the same thing here
 
 
+def solve_crossword(xword_file, word_file):
+
+    crossword = Crossword(xword_file, word_file)
+
+    crossword.print_input_files()
+    crossword.print_grids()
+    crossword.print_xword_and_words()
 
 
 if __name__ == "__main__":
 
-    xword_file, dict_file = parse_files()
+    xword_file, word_file = parse_files()
 
-    word_dict = read_word_file(dict_file)  # dict of all  words : lengths
+    solve_crossword(xword_file, word_file)
+
+    sys.exit()
+
+
+    word_dict = read_word_file(word_file)  # dict of all  words : lengths
 
     grid_words = read_xword_file(xword_file)  #  np matrix  with 2 = #;  1 = blank;  0 = X
+
+
 
     crossword_solver(word_dict, grid_horz=grid_words)
 
