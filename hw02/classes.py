@@ -4,10 +4,10 @@ class Variable():
     DOWN = "down"
 
     def __init__(self, direction, length, x, y):
-        direction = self.direction
-        length =    self.length
-        x =         self.x
-        y =         self.y
+        self.direction = direction
+        self.length =    length
+        self.x =         x
+        self.y =         y
 
     def __hash__(self):  # dictionary
         return hash((self.direction, self.length, self.x, self.y))
