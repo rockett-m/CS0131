@@ -74,6 +74,7 @@ class Crossword():
 
 
     def print_input_files(self):
+        print(f'\n{self.width} x {self.height} crossword detected\n')
         print(f'\nxword_file:\t{self.xword_file}\n')
         [ print(x) for x in open(self.xword_file, 'r').read().splitlines() ]
 

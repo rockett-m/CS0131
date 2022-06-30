@@ -45,72 +45,6 @@ def parse_files():
     return xword_file, word_file
 
 
-def read_word_file(word_file):
-
-    word_dict = OrderedDict()
-
-    with open(word_file, 'r') as fi:
-        for line in fi:
-            line = line.strip()
-            word_dict[line] = len(line)  # set word equal to word length
-
-    return word_dict
-
-
-def read_xword_file(xword_file):
-
-    with open(xword_file, 'r') as fi:
-
-        global WIDTH, HEIGHT
-
-        WIDTH = HEIGHT = ccount = 0
-        lcount = -1
-
-        grid_valid = np.zeros((0, 0))
-        grid_words = np.zeros((0, 0))
-
-        for line in fi:
-            if lcount == -1:  # zeros grid to match input dimensions
-                result = re.match(r'\s+(\d)\s+(\d)\s*', line)
-                if result:
-                    WIDTH =  int(result.group(1))
-                    HEIGHT = int(result.group(2))
-                grid_valid = np.zeros((WIDTH, HEIGHT))  # populate with 1 if char belongs
-                grid_words = np.zeros((WIDTH, HEIGHT))  # populate with 1 if char belongs
-
-            else:  # add 1's to grid x,y coords if letter belongs there
-                line = line.strip()
-                fields = line.split(' ')
-
-                for char in fields:  # build word list horizontal of words in a line
-                    char.rstrip('\n')
-
-                    if re.search(r'\d+', char):
-                        # print(f'line: {lcount}; char: {ccount}; char: >{char}<; line: {line};')
-                        grid_valid[lcount, ccount] = 1
-                        grid_words[lcount, ccount] = 2
-                        ccount += 1
-
-                    elif re.search('_', char):  # word begin
-                        # print(f'line: {lcount}; char: {ccount}; char: >{char}<; line: {line};')
-                        grid_valid[lcount, ccount] = 1
-                        grid_words[lcount, ccount] = 1
-                        ccount += 1
-
-                    elif re.search(r'X', char):  # end and reset counts
-                        ccount += 1
-
-                    elif re.search(r' ', char):
-                        pass
-
-            ccount = 0; lcount += 1
-
-    # print(f'grid_valid:\n{grid_valid}\n')
-    print(f'grid_words:\n{grid_words}\n')
-
-    return grid_words
-
-
 def crossword_solver(word_dict, grid_horz):
 
     grid_vert = grid_horz.transpose()
@@ -204,15 +138,8 @@ if __name__ == "__main__":
     sys.exit()
 
 
-    word_dict = read_word_file(word_file)  # dict of all  words : lengths
-
-    grid_words = read_xword_file(xword_file)  #  np matrix  with 2 = #;  1 = blank;  0 = X
-
-
-
     crossword_solver(word_dict, grid_horz=grid_words)
 
-    sys.exit()
 
 
 
