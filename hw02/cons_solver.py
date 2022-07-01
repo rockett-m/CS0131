@@ -47,12 +47,6 @@ def parse_files():
 
 def crossword_solver(word_dict, grid_horz):
 
-    grid_vert = grid_horz.transpose()
-    crossword = Crossword(word_dict, grid_horz, grid_vert)
-
-
-    word = Variable(direction, length, x, y)
-
     # for word in word_dict.sorted():
     row_idx = 0
     for row in grid_horz:
@@ -65,30 +59,17 @@ def crossword_solver(word_dict, grid_horz):
                 end_col_idx = col_idx - 1  # prior col - last letter location
                 print(f'streak {streak} over: begin @ {row_idx, start_col_idx} end @ {row_idx, end_col_idx}')
 
-                for word in word_dict.keys():  # fill in words that could fit
-                    if len(word) == streak:
-                        pass
-
             elif item > 0:  # start of word or blank
-
-                if streak > 0:  # word has been detected already
-                    streak += 1
-
+                if streak > 0: streak += 1  # word has been detected already
                 # prev was border or an 'X' and current is a '#'
                 if (item == 2) and ((prev_item == 0) or (prev_col_idx == 0)):  # beginning of horz word - must start from boundary
-                    streak = 1
-                    start_col_idx = col_idx
+                    streak = 1; start_col_idx = col_idx
 
                 if (col_idx == WIDTH-1) and (streak > 0):  # word over due to end of line
                     end_col_idx = col_idx
                     print(f'streak {streak} over: begin @ {row_idx, start_col_idx} end @ {row_idx, end_col_idx}')
 
-                    for word in word_dict.keys():
-                        if len(word) == streak:
-                            pass
-
-            prev_item = item
-            prev_col_idx = col_idx
+            prev_item = item; prev_col_idx = col_idx
 
             col_idx += 1
         row_idx += 1
@@ -124,10 +105,12 @@ def solve_crossword(xword_file, word_file):
 
     crossword = Crossword(xword_file, word_file)
 
-    crossword.print_input_files()
-    crossword.print_grids()
-    crossword.print_xword_and_words()
+    # crossword.print_input_files()
+    # crossword.print_grids()
+    # crossword.print_xword_and_words()
+    crossword.print_words_to_solve()
 
+    # crossword.find_word_locations()
 
 if __name__ == "__main__":
 
