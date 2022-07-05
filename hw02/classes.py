@@ -4,7 +4,8 @@ import sys
 import numpy as np
 from collections import OrderedDict
 
-class Variable():
+
+class Variable:
 
     ACROSS = "across"
     DOWN = "down"
@@ -44,7 +45,7 @@ class Variable():
         return f"Variable({self.row}, {self.col}, {self.length}, {direction}, {self.name})"
 
 
-class Crossword():
+class Crossword:
     def __init__(self, xword_file, word_file):
         self.xword_file = xword_file
         self.word_file =  word_file
@@ -166,8 +167,7 @@ class Crossword():
             domain = self.find_domain(i.length)
             self.domain_dict[i.name] = domain
 
-        # for k, v in self.domain_dict.items():
-        #     print(f'{k=} {v=}')
+        # for k, v in self.domain_dict.items(): print(f'{k=} {v=}')
         ## DOMAIN ##
 
         self.intersections = dict()
@@ -201,16 +201,15 @@ class Crossword():
         return neighbors
 
     def print_domains(self):
-        for i in self.variables:
-            print(f'{i=}')
+        for i in self.variables: print(f'{i=}')
 
     def print_input_files(self):
         print(f'\n{self.width} x {self.height} crossword detected\n')
         print(f'\n{self.xword_file = }\n')
-        [ print(x) for x in open(self.xword_file, 'r').read().splitlines() ]
+        [print(x) for x in open(self.xword_file, 'r').read().splitlines()]
 
         print(f'\n{self.word_file = }\n')
-        [ print(x) for x in open(self.word_file, 'r').read().splitlines() ]; print()
+        [print(x) for x in open(self.word_file, 'r').read().splitlines()]; print()
 
     def print_xword_and_words(self):
         print(f'\n{self.words = }\n')
@@ -231,25 +230,15 @@ class Crossword():
         print(f'{self.vertical_word_count = }')
         print(f'{self.horizontal_word_count = }')
 
-# word class / streak - start location, length, direction
 
-# int start row, start col
 # constraint - relationship between words
 
 # intersection - constraint (letter needs to be the same)
-
-# domain - list of strings
 
 # create word objects
 # create constraint objects
 
 # then do constraint satisfaction
-
-# make Variable (word class)
-# store number - like 0, 1, 2
-# down/across
-# bool /
-#
 
 # constraint
 # intersection letters

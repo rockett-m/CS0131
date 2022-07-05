@@ -1,19 +1,10 @@
 #!/usr/bin/python3
-import math
 import os
 import sys
 import time
-from collections import OrderedDict
 from functools import wraps
-import networkx as nx
-from math import *
-import heapq
-import numpy as np
 
-from classes import Variable, Crossword
-
-global WIDTH, HEIGHT
-
+from classes import Crossword
 
 # run as ./cons_solver.py ./inputData/xword00.txt ./inputData/dictionary_small.txt
 def timeit(func):
@@ -29,7 +20,7 @@ def timeit(func):
 
 def print_dict(my_dict: dict):
     for key, value in my_dict.items():
-        print(f'key: {key}  :  value: {value}')
+        print(f'{key = };  {value = }')
 
 
 def parse_files():
@@ -44,28 +35,68 @@ def parse_files():
     return xword_file, word_file
 
 
-
-class Crossword_Solver():
+class Crossword_Solver:
     def __init__(self, crossword):
         self.crossword = crossword
-        # self.domains = {
-        #     var: self.crossword.words.copy()
-        #     for var in self.crossword.variables
-        # }
-        # self.domains = {
-        #     var: [ x for x in self.crossword.words if len(x) == var ]
-        #     # for var in self.crossword.variables
-        # }
-        #
-        # self.domains = {
-        #
-        # domain_list = []
-        # for var in self.crossword.variables:
-        #     for word in self.crossword.words:
-        #         if len(word) == var.length:
-        #             domain_list.append(word)
-        #             var: self.domains = domain_list
-        # }
+        self.domains = {
+            var: self.crossword.words.copy()
+            for var in self.crossword.variables
+        }
+        # update with only words the same size as the blank space
+        for k, v in self.domains.items():
+            list_words = []
+            for word in crossword.words:
+                if k.length == len(word):
+                    list_words.append(word)
+            self.domains.update({k:list_words})
+
+        for k, v in self.domains.items():  # fatal error
+            if len(v) == 0:
+                sys.exit(f'No possible words (with {k.length=} for {k = }. Exiting...')
+
+    def letter_grid(self, assignment):
+        letters = [
+            [None for _ in range(self.crossword.width)]
+            for _ in range(self.crossword.height)
+        ]
+        for variable, word in assignment.items():
+            direction = variable.direction
+            for k in range(len(word)):
+                row = variable.row + (k if direction == variable.DOWN else 0)
+                col = variable.col + (k if direction == variable.ACROSS else 0)
+                letters[row][col] = word[k]
+        return letters
+
+    def print_crossword(self, assignment):
+
+        letters = self.letter_grid(assignment)
+        for row in range(self.crossword.height):
+            for col in range(self.crossword.width):
+                if self.crossword[row][col]:
+                    print(letters[row][col] or " ", end="")
+                else:
+                    print("#", end="")
+            print()
+
+    def solve(self):
+        self.enforce_node_consistency()
+        return self.backtrack_search()
+
+    def enforce_node_consistency(self):
+        """
+        Update `self.domains` such that each variable is node-consistent.
+        (Remove any values that are inconsistent with a variable's unary
+         constraints; in this case, the length of the word.)
+        """
+        def check_length(string, length):
+            if len(string) != length:
+                return string
+
+        for variable, domain in self.domains.items():
+            keys2delete = map(check_length, domain, [variable.length for x in range(len(domain))])
+            for key in list(keys2delete):
+                if key is not None:
+                    self.domains[variable].remove(key)
 
     def assignment_complete(self, assignment):
         if len(assignment) == len(self.crossword.variables):
@@ -82,21 +113,66 @@ class Crossword_Solver():
             for var2 in copy:
                 if assignment[var] == assignment[var2]:
                     return False
-                crossing = self.crossword.intersections((var, var2))
+                crossing = self.crossword.intersections[(var, var2)]
                 if crossing is not None:
                     x = crossing[0]
                     y = crossing[1]
                     if assignment[var][x] != assignment[var2][y]:
                         return False
-
         return True
-# def domain_updater(word_file):
-#
-#     words = open(word_file, 'r').read().splitlines()
-#
-#     for
-#
-#     domain = []
+
+    def order_domains_values(self, var, assignment):
+        def cost_calc(list1, list2):
+            cost_inner = []
+            for charr in list1:
+                cost_inner.append(sum(map(lambda x: x == charr, list2)))
+            return cost_inner
+
+        cost = [0 for x in self.domains[var]]
+        cost2 = []
+        for neighbor in self.crossword.neighbors(var):
+            crossing = self.crossword.intersections([var, neighbor])
+            character1 = [x[crossing[0]] for x in self.domains[var]]
+            character2 = [x[crossing[1]] for x in self.domains[neighbor]]
+            cost2 = cost_calc(character1, character2)
+            cost = [sum(x) for x in zip(cost, cost2)]
+
+        return [x for _, x in sorted(zip(cost2, self.domains[var]))]
+
+    def select_unassigned_variable(self, assignment):
+        remaining = 1e10
+        degree = 0
+
+        var = None
+        for variable in self.crossword.variables:
+            if variable not in assignment:
+                if len(self.domains[variable]) < remaining:
+                    remaining = len(self.domains[variable])
+                    var = variable
+                elif len(self.domains[variable]) == remaining:
+                    if len(self.crossword.neighbors(variable)) > degree:
+                        degree = len(self.crossword.neighbors(variable))
+                        var = variable
+        return var
+
+    def backtrack_search(self, assignment):
+
+        if self.assignment_complete(assignment):
+            return assignment
+
+        var = self.select_unassigned_variable(assignment)
+        for value in self.order_domains_values(var, assignment):
+            copy_assn = assignment.copy()
+            copy_assn.update({var:value})
+            consistent = self.is_consistent(copy_assn)
+            if consistent:
+                assignment.update({var:value})
+                result = self.backtrack_search(assignment)
+                if result is not None:
+                    return result
+                else:
+                    assignment.pop(var)
+        return None
 
 
 def solve_crossword(xword_file, word_file):
@@ -107,10 +183,15 @@ def solve_crossword(xword_file, word_file):
     # crossword.print_grids()
     # crossword.print_xword_and_words()
     crossword.print_words_to_solve()
-
     # crossword.print_domains()
-
     crossword_solver = Crossword_Solver(crossword)
+
+    assignment = crossword_solver.solve()
+    # sys.exit()
+    if assignment is None:
+        print('No Solution')
+    else:
+        crossword_solver.print_crossword(assignment)
     # print(f'{crossword_solver.domains=}')
     # crossword.find_word_locations()
 
