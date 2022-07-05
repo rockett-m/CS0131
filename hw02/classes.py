@@ -16,7 +16,6 @@ class Variable:
         self.length =    length
         self.direction = direction.upper()
         self.name =      name
-        self.domain =    []
         self.cells =     []
 
         for k in range(self.length):
@@ -159,17 +158,6 @@ class Crossword:
         # for i in store_words: print(i)
         self.vertical_word_count = len(store_words)
 
-
-        ## DOMAIN ##
-        self.domain_dict = OrderedDict()
-
-        for i in self.variables:
-            domain = self.find_domain(i.length)
-            self.domain_dict[i.name] = domain
-
-        # for k, v in self.domain_dict.items(): print(f'{k=} {v=}')
-        ## DOMAIN ##
-
         self.intersections = dict()
         for var1 in self.variables:
             for var2 in self.variables:
@@ -185,13 +173,6 @@ class Crossword:
                     intersection = intersection.pop()
                     self.intersections[var1, var2] = (cells1.index(intersection), cells2.index(intersection))
 
-    def find_domain(self, length):
-        domain = []
-        for word in self.words:
-            if len(word) == length:
-                domain.append(word)
-        return domain
-
     def neighbors(self, var):
         neighbors = []
         for v in self.variables:
@@ -199,9 +180,6 @@ class Crossword:
                 neighbors.append(v)
         neighbors = set(neighbors)
         return neighbors
-
-    def print_domains(self):
-        for i in self.variables: print(f'{i=}')
 
     def print_input_files(self):
         print(f'\n{self.width} x {self.height} crossword detected\n')
