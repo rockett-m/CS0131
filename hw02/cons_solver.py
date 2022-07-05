@@ -4,7 +4,7 @@ import sys
 import time
 from functools import wraps
 
-from classes import Crossword
+from classes import *
 
 # run as ./cons_solver.py ./inputData/xword00.txt ./inputData/dictionary_small.txt
 def timeit(func):
@@ -26,13 +26,15 @@ def print_dict(my_dict: dict):
 def parse_files():
     xword_file = sys.argv[1]
     word_file = sys.argv[2]
+    arc_consistency = False
+    if len(sys.argv) > 3: arc_consistency = True
 
     for file in [xword_file, word_file]:
         if not os.path.isfile(file):
             print(f'file not found: {file}\n')
-            sys.exit("run: python cons_solver.py xword00.txt dictionary_small.txt ")
+            sys.exit("run: python cons_solver.py xword00.txt dictionary_small.txt [true]")
 
-    return xword_file, word_file
+    return xword_file, word_file, arc_consistency
 
 
 class Crossword_Solver:
@@ -78,9 +80,10 @@ class Crossword_Solver:
                     print("#", end="")
             print()
 
-    def solve(self):
+    def solve(self, arc_consistency=False):
         self.enforce_node_consistency()
-        return self.backtrack_search()
+        self.ac3(arc_consistency)
+        return self.backtrack_search(dict())
 
     def enforce_node_consistency(self):
         """
@@ -97,6 +100,10 @@ class Crossword_Solver:
             for key in list(keys2delete):
                 if key is not None:
                     self.domains[variable].remove(key)
+
+    def ac3(self, arc_consistency=False):
+        if not arc_consistency:
+            return
 
     def assignment_complete(self, assignment):
         if len(assignment) == len(self.crossword.variables):
@@ -175,35 +182,27 @@ class Crossword_Solver:
         return None
 
 
-def solve_crossword(xword_file, word_file):
+if __name__ == "__main__":
 
-    crossword = Crossword(xword_file, word_file)
+    xword_file, word_file, arc_consistency = parse_files()
 
-    # crossword.print_input_files()
-    # crossword.print_grids()
-    # crossword.print_xword_and_words()
-    crossword.print_words_to_solve()
-    # crossword.print_domains()
+    crossword =        Crossword(xword_file, word_file)
     crossword_solver = Crossword_Solver(crossword)
+    assignment =       crossword_solver.solve(arc_consistency)
 
-    assignment = crossword_solver.solve()
-    # sys.exit()
     if assignment is None:
         print('No Solution')
     else:
         crossword_solver.print_crossword(assignment)
+
+
+    # crossword.print_input_files()
+    # crossword.print_grids()
+    # crossword.print_xword_and_words()
+    # crossword.print_words_to_solve()
+    # crossword.print_domains()
     # print(f'{crossword_solver.domains=}')
     # crossword.find_word_locations()
-
-
-if __name__ == "__main__":
-
-    xword_file, word_file = parse_files()
-
-    solve_crossword(xword_file, word_file)
-
-    sys.exit()
-
 
 # for recursive, call backtrack from inside backtrack
 

@@ -31,8 +31,7 @@ class Variable:
         if ((self.row == other.row) and
             (self.col == other.col) and
             (self.length == other.length) and
-            (self.direction == other.direction) and
-            (self.name == other.name)): equality_bool = True
+            (self.direction == other.direction)): equality_bool = True
 
         return equality_bool
 
@@ -102,19 +101,19 @@ class Crossword:
                     if col_idx == (self.width - 1):
                         store_words.append(word_index)
                         # domain = self.find_domain(length=word_index[2])
-                        self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction='DOWN', name=name))
+                        self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction=Variable.ACROSS, name=name))
                         word_index = []
 
                 elif (char == -1) and (col_idx != self.width - 1) and (len(word_index) > 0):  # stop - end
                     store_words.append(word_index)
                     # domain = self.find_domain(length=word_index[2])
-                    self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction='DOWN', name=name))
+                    self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction=Variable.ACROSS, name=name))
                     word_index = []
 
                 elif (char == -1) and (col_idx == self.width - 1) and (len(word_index) > 0):  # stop - end
                     store_words.append(word_index)
                     # domain = self.find_domain(length=word_index[2])
-                    self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction='DOWN', name=name))
+                    self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction=Variable.ACROSS, name=name))
 
                 elif (char == -1) and (len(word_index) == 0):  # stop - end
                     word_index = []
@@ -138,19 +137,19 @@ class Crossword:
                     if col_idx == (self.width - 1):
                         store_words.append(word_index)
                         # domain = self.find_domain(length=word_index[2])
-                        self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction='DOWN', name=name))
+                        self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction=Variable.DOWN, name=name))
                         word_index = []
 
                 elif (char == -1) and (col_idx != self.width - 1) and (len(word_index) > 0):  # stop - end
                     store_words.append(word_index)
                     # domain = self.find_domain(length=word_index[2])
-                    self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction='DOWN', name=name))
+                    self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction=Variable.DOWN, name=name))
                     word_index = []
 
                 elif (char == -1) and (col_idx == self.width - 1) and (len(word_index) > 0):  # stop - end
                     store_words.append(word_index)
                     # domain = self.find_domain(length=word_index[2])
-                    self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction='DOWN', name=name))
+                    self.variables.add(Variable(row=word_index[0], col=word_index[1], length=word_index[2], direction=Variable.DOWN, name=name))
 
                 elif (char == -1) and (len(word_index) == 0):  # stop - end
                     word_index = []
@@ -174,12 +173,16 @@ class Crossword:
                     self.intersections[var1, var2] = (cells1.index(intersection), cells2.index(intersection))
 
     def neighbors(self, var):
-        neighbors = []
-        for v in self.variables:
-            if (v != var) and (self.intersections[v, var]):
-                neighbors.append(v)
-        neighbors = set(neighbors)
-        return neighbors
+        # neighbors = []
+        # for v in self.variables:
+        #     if (v != var) and (self.intersections[v, var]):
+        #         neighbors.append(v)
+        # neighbors = set(neighbors)
+        # return neighbors
+        return set(
+            v for v in self.variables
+            if v != var and self.intersections[v, var]
+        )
 
     def print_input_files(self):
         print(f'\n{self.width} x {self.height} crossword detected\n')
