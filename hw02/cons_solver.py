@@ -74,15 +74,16 @@ class Crossword_Solver:
         letters = self.letter_grid(assignment)
         for row in range(self.crossword.height):
             for col in range(self.crossword.width):
-                if self.crossword[row][col]:
+                if self.crossword[row][col] >= 0:  # not a 'X'
                     print(letters[row][col] or " ", end="")
                 else:
-                    print("#", end="")
+                    print("█", end="")
             print()
 
     def solve(self, arc_consistency=False):
         self.enforce_node_consistency()
-        self.ac3(arc_consistency)
+        # self.ac3(arc_consistency)
+        print(f'{self.crossword.variables = }\n')
         return self.backtrack_search(dict())
 
     def enforce_node_consistency(self):
@@ -113,18 +114,18 @@ class Crossword_Solver:
     def is_consistent(self, assignment):
         if len(assignment) == 1:
             return True
-        for var in assignment:
+        for var1 in assignment:
             copy = assignment.copy()
-            copy.pop(var)
+            copy.pop(var1)
 
             for var2 in copy:
-                if assignment[var] == assignment[var2]:
+                if assignment[var1] == assignment[var2]:  # we are allowed to repeat words
                     return False
-                crossing = self.crossword.intersections[(var, var2)]
+                crossing = self.crossword.overlaps[(var1, var2)]
                 if crossing is not None:
                     x = crossing[0]
                     y = crossing[1]
-                    if assignment[var][x] != assignment[var2][y]:
+                    if assignment[var1][x] != assignment[var2][y]:
                         return False
         return True
 
@@ -138,7 +139,7 @@ class Crossword_Solver:
         cost = [0 for x in self.domains[var]]
         cost2 = []
         for neighbor in self.crossword.neighbors(var):
-            crossing = self.crossword.intersections([var, neighbor])
+            crossing = self.crossword.overlaps[(var,neighbor)]
             character1 = [x[crossing[0]] for x in self.domains[var]]
             character2 = [x[crossing[1]] for x in self.domains[neighbor]]
             cost2 = cost_calc(character1, character2)
@@ -147,12 +148,11 @@ class Crossword_Solver:
         return [x for _, x in sorted(zip(cost2, self.domains[var]))]
 
     def select_unassigned_variable(self, assignment):
-        remaining = 1e10
-        degree = 0
 
-        var = None
+        var = None; remaining = 1e10; degree = 0
         for variable in self.crossword.variables:
             if variable not in assignment:
+                # print(f'not in assn {variable = }')
                 if len(self.domains[variable]) < remaining:
                     remaining = len(self.domains[variable])
                     var = variable
@@ -160,6 +160,8 @@ class Crossword_Solver:
                     if len(self.crossword.neighbors(variable)) > degree:
                         degree = len(self.crossword.neighbors(variable))
                         var = variable
+            # else:
+            #     print(f'var in assn {var = }')
         return var
 
     def backtrack_search(self, assignment):
@@ -168,17 +170,26 @@ class Crossword_Solver:
             return assignment
 
         var = self.select_unassigned_variable(assignment)
+        # print(f'{var = }')
         for value in self.order_domains_values(var, assignment):
+            # print(f'{var = }{assignment = } {value = }\n')
             copy_assn = assignment.copy()
             copy_assn.update({var:value})
             consistent = self.is_consistent(copy_assn)
+            # print(f'{var = }{assignment = } {value = } {consistent = }')
             if consistent:
                 assignment.update({var:value})
+                print(f'{var = }; {assignment = }; {value = }; {consistent = };\n')
                 result = self.backtrack_search(assignment)
                 if result is not None:
+                    print(f'{result = }')
                     return result
                 else:
                     assignment.pop(var)
+            # else:
+            #     # print(f'NOT CONSISTENT: {var = }{assignment = } {value = } {consistent = }')
+            #     pass
+            print(f'{assignment.items() = }')
         return None
 
 
@@ -189,6 +200,7 @@ if __name__ == "__main__":
     crossword =        Crossword(xword_file, word_file)
     crossword_solver = Crossword_Solver(crossword)
     assignment =       crossword_solver.solve(arc_consistency)
+    # print(crossword_solver.letter_grid(dict()))
 
     if assignment is None:
         print('No Solution')
