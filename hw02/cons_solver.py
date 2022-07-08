@@ -44,9 +44,12 @@ class Crossword_Solver:
 
         for variable, word in assignment.items():
             # print(f'{variable = }  {word = }')
+            direction = variable.direction
             for k in range(len(word)):
-                row = variable.row + (k if variable.direction == 'DOWN' else 0)
-                col = variable.col + (k if variable.direction == 'ACROSS' else 0)
+                # row = variable.row + (k if variable.direction == 'DOWN' else 0)
+                # col = variable.col + (k if variable.direction == 'ACROSS' else 0)
+                row = variable.row + (k if direction == variable.DOWN else 0)
+                col = variable.col + (k if direction == variable.ACROSS else 0)
                 letters[row][col] = word[k]
                 # print(f'{letters[row][col] = }  {word[k] = }')
 
@@ -135,7 +138,7 @@ class Crossword_Solver:
             if self.revise(x, y):
                 if not self.domains[x]:
                     return False
-                for z in self.crossword.neighbors(x) - self.domains[y]:
+                for z in self.crossword.neighbors(x) - set(self.domains[y]):
                     arcs.append((z, x))
 
         print('\nInitial assignment with pre-processed domain sizes:')
@@ -174,10 +177,10 @@ class Crossword_Solver:
         for var in assignment:
 
             # # All values must be distinct
-            # if assignment[var] not in used_words:
-            #     used_words.add(assignment[var])
-            # else:
-            #     return False
+            if assignment[var] not in used_words:
+                used_words.add(assignment[var])
+            else:
+                return False
 
             # Every value must have the correct length
             if len(assignment[var]) != var.length:
@@ -194,36 +197,43 @@ class Crossword_Solver:
                         return False
 
         return True
-    # def order_domains_values(self, var):
-    #     def cost_calc(list1, list2):
-    #         cost_inner = []
-    #         for character1 in list1:
-    #             cost_inner.append(sum(map(lambda x: x == character1, list2)))
-    #         return cost_inner
-    #
-    #     cost = [0 for x in self.domains[var]]
-    #     for neighbor in self.crossword.neighbors(var):
-    #         crossing = self.crossword.overlaps[(var,neighbor)]
-    #         character1 = [x[crossing[0]] for x in self.domains[var]]
-    #         character2 = [x[crossing[1]] for x in self.domains[neighbor]]
-    #         cost2 = cost_calc(character1, character2)
-    #         cost = [sum(x) for x in zip(cost, cost2)]
-    #
-    #
-    #     values = [x for _, x in sorted(zip(cost2, self.domains[var]))]
-    #     print(f'{values = }')
-    #     return [x for _, x in sorted(zip(cost2, self.domains[var]))]
+
+
+    def consistent(self, assignment):
+        """
+        Return True if `assignment` is consistent (i.e., words fit in crossword
+        puzzle without conflicting characters); return False otherwise.
+        """
+        if len(assignment) == 1:
+            return True
+
+        for variable1 in assignment:
+            copy = assignment.copy()
+            copy.pop(variable1)
+
+            for variable2 in copy:
+                # ok if words repeat
+                # if assignment[variable1] == assignment[variable2]:
+                #     return False
+
+                crossing = self.crossword.overlaps[(variable1, variable2)]
+                if crossing is not None:
+                    x = crossing[0]
+                    y = crossing[1]
+                    if assignment[variable1][x] != assignment[variable2][y]:
+                        return False
+        return True
+
 
     def select_unassigned_variable(self, assignment):
         best = None
 
-        for var in self.crossword.variables - set(assignment):
+        for variable in self.crossword.variables - set(assignment):
             if (best is None or
-                len(self.domains[var]) < len(self.domains[best]) or
-                len(self.crossword.neighbors(var)) > len(self.crossword.neighbors(best))):
-                    best = var
-
-        print(f'{best = }')
+                len(self.domains[variable]) < len(self.domains[best]) or
+                len(self.crossword.neighbors(variable)) > len(self.crossword.neighbors(best))):
+                    best = variable
+        # print(f'{best = }')
         return best
 
     def order_domains_values(self, var, assignment):
@@ -260,24 +270,29 @@ class Crossword_Solver:
         # # Return list of vals sorted from fewest to most other_vals ruled out:
         # return sorted([x for x in vals_ruleout], key = lambda x: vals_ruleout[x])
 
-
-
-
-
     def backtrack(self, assignment):
+        global calls
+        calls += 1
         if self.assignment_complete(assignment):
             return assignment
 
-        var = self.select_unassigned_variable(assignment)
-        for value in self.order_domains_values(var, assignment):
-            assignment[var] = value
-            print(f'{assignment = }')
-            if self.is_consistent(assignment):
-                print(f'consistent: {assignment = }')
+        variable = self.select_unassigned_variable(assignment)
+        for test_word in self.order_domains_values(variable, assignment):
+            assignment[variable] = test_word
+            # print(f'{assignment = }')
+
+            if self.consistent(assignment):
+            # consistency = self.consistent(assignment)
+            # if consistency:
+            # if self.consistent(assignment):
+            #     print(f'\nconsistent: {assignment = }\n')
+
                 result = self.backtrack(assignment)
                 if result is not None:
+                    print(f'{result = }')
+                    # print(f'{self.crossword.overlaps}\n')
                     return result
-            assignment.pop(var)
+            assignment.pop(variable)
         return None
 
     def backtrack_ac3(self, assignment):

@@ -14,7 +14,7 @@ class Variable:
         self.row =       row
         self.col =       col
         self.length =    length
-        self.direction = direction.upper()
+        self.direction = direction
         self.name =      name
         self.cells =     []
 
@@ -97,7 +97,7 @@ class Crossword:
                 char = self.grid_numbers[row][col_idx]
 
                 if (char > 0) and ((col_idx == 0) or (len(word_index) == 0)):
-                    name = f'{char}-ACROSS'
+                    name = f'{char}-across'
                     word_index = [row, col_idx, 1, name]
 
                 elif (char >= 0) and (len(word_index) > 0):  # add length   if _ or #
@@ -130,7 +130,7 @@ class Crossword:
                 char = self.grid_numbers[col_idx][row]
 
                 if (char > 0) and ((col_idx == 0) or (len(word_index) == 0)):
-                    name = f'{char}-DOWN'
+                    name = f'{char}-down'
                     word_index = [col_idx, row, 1, name]
 
                 elif (char >= 0) and (len(word_index) > 0):  # add length   if _ or #
@@ -159,19 +159,36 @@ class Crossword:
         self.vertical_word_count = len(store_words)
 
         self.overlaps = dict()
-        for var1 in self.variables:
-            for var2 in self.variables:
-                if var1 == var2:
+        for v1 in self.variables:
+            for v2 in self.variables:
+                if v1 == v2:
                     continue
-                cells1 = var1.cells
-                cells2 = var2.cells
-
+                cells1 = v1.cells
+                cells2 = v2.cells
                 intersection = set(cells1).intersection(cells2)
                 if not intersection:
-                    self.overlaps[var1, var2] = None
+                    self.overlaps[v1, v2] = None
                 else:
                     intersection = intersection.pop()
-                    self.overlaps[var1, var2] = (cells1.index(intersection), cells2.index(intersection))
+                    self.overlaps[v1, v2] = (
+                        cells1.index(intersection),
+                        cells2.index(intersection)
+                    )
+
+        # self.overlaps = dict()
+        # for var1 in self.variables:
+        #     for var2 in self.variables:
+        #         if var1 == var2:
+        #             continue
+        #         cells1 = var1.cells
+        #         cells2 = var2.cells
+        #
+        #         intersection = set(cells1).intersection(cells2)
+        #         if not intersection:
+        #             self.overlaps[var1, var2] = None
+        #         else:
+        #             intersection = intersection.pop()
+        #             self.overlaps[var1, var2] = (cells1.index(intersection), cells2.index(intersection))
 
     def neighbors(self, var):
         # neighbors = []
