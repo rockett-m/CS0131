@@ -104,19 +104,16 @@ class Crossword:
                     word_index[2] += 1
                     if col_idx == (self.width - 1):
                         store_words.append(word_index)
-                        # domain = self.find_domain(length=word_index[2])
                         self.variables.add(Variable(row=word_index[0], col=word_index[1], direction=Variable.ACROSS, length=word_index[2], name=name))
                         word_index = []
 
                 elif (char == -1) and (col_idx != self.width - 1) and (len(word_index) > 0):  # stop - end
                     store_words.append(word_index)
-                    # domain = self.find_domain(length=word_index[2])
                     self.variables.add(Variable(row=word_index[0], col=word_index[1], direction=Variable.ACROSS, length=word_index[2], name=name))
                     word_index = []
 
                 elif (char == -1) and (col_idx == self.width - 1) and (len(word_index) > 0):  # stop - end
                     store_words.append(word_index)
-                    # domain = self.find_domain(length=word_index[2])
                     self.variables.add(Variable(row=word_index[0], col=word_index[1], direction=Variable.ACROSS, length=word_index[2], name=name))
 
                 elif (char == -1) and (len(word_index) == 0):  # stop - end
