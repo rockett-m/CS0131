@@ -1,0 +1,20 @@
+# How to Run
+./cons_solver.py
+
+python3 cons_solver.py xword00.txt dictionary_small.txt [opt: type anything for ac3]
+
+
+# References #
+
+# Harvard AI Class
+    # understand functions
+        https://cs50.harvard.edu/ai/2020/projects/3/crossword/
+        https://cs50.harvard.edu/extension/ai/2020/spring/projects/3/crossword/
+    # implementation examples
+        https://github.com/Marouxet/cs50/blob/03-crossword/
+        https://github.com/PLCoster/cs50ai-week3-crossword/blob/master/
+        https://github.com/trancker/crossword/blob/master/
+        https://github.com/nahueespinosa/ai50/blob/be343114b1832c500116891a7b2e51390c51ff76/crossword/
+        https://github.com/amangarg078/cs50ai/blob/3cdecbfaeda1440b829b7c0913bcf2a991108936/3-optimization/crossword/
+# backtrack search
+    https://leetcode.com/problems/word-break/discuss/1330017/python-3-backtracking-using-memoization
