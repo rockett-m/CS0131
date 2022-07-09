@@ -1,9 +1,5 @@
 import re
-import sys
-
 import numpy as np
-from collections import OrderedDict
-
 
 class Variable:
 
@@ -54,8 +50,14 @@ class Crossword:
         self.words = open(word_file, 'r').read().splitlines()
         self.orig_xword = (open(xword_file, 'r').read().splitlines())[1:]  # skip dimensions
 
-        with open(xword_file, 'r') as fi:
+        # read in crossword file and convert to numpy grid with the following decodings
+        """
+        # ==  #
+        X == -1
+        _ ==  0
+        """
 
+        with open(xword_file, 'r') as fi:
             ccount = 0; lcount = -1
 
             for line in fi:
@@ -81,14 +83,10 @@ class Crossword:
 
                 ccount = 0; lcount += 1
 
-        """
-        # ==  #
-        X == -1
-        _ ==  0
-        """
+        # loop through the grid scanning for horz and vert words
+        # update the self.variables set with coords, direction, length, and name
 
         self.variables = set()
-        # store_words = [[row, col, length, direction='Across'|'Down'],[row, col, length, direction='Across'|'Down']]
         store_words = []
         for row in range(self.height):
             word_index = []; name = ''
@@ -158,6 +156,8 @@ class Crossword:
         # for i in store_words: print(i)
         self.vertical_word_count = len(store_words)
 
+        # compute intersection chars between variables that will matter later
+        # will want both words with a shared letter to have it be the same
         self.overlaps = dict()
         for v1 in self.variables:
             for v2 in self.variables:
@@ -176,6 +176,7 @@ class Crossword:
                     )
 
     def neighbors(self, var):
+        # return a set of neighboring words that will matter for intersections and consistency
         neighbors = []
         for v in self.variables:
             if (v != var) and (self.overlaps[v, var]):

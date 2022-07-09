@@ -13,6 +13,8 @@ global recursive_calls
 recursive_calls = 0
 
 def parse_files():
+    # read user input on what word list and crossword to solve
+    # ac3 optional
     xword_file = sys.argv[1]
     word_file = sys.argv[2]
     arc_consistency = False
@@ -28,6 +30,7 @@ def parse_files():
 
 class Crossword_Solver:
     def __init__(self, crossword):
+        # create dict with vars corresponding to domains
         self.crossword = crossword
         self.domains = {
             var: self.crossword.words.copy()
@@ -38,6 +41,7 @@ class Crossword_Solver:
         print(f'\n{len(self.crossword.variables)} words')
 
     def letter_grid(self, assignment):
+        # create grid and fill in letters from assignment
         letters = [[None for _ in range(self.crossword.width)]
                     for _ in range(self.crossword.height)]
 
@@ -54,7 +58,7 @@ class Crossword_Solver:
         return letters
 
     def print_crossword(self, assignment):
-
+        # print out legible crossword
         letters = self.letter_grid(assignment)
         for row in range(self.crossword.height):
             for col in range(self.crossword.width):
@@ -67,7 +71,8 @@ class Crossword_Solver:
         print()
 
     def enforce_node_consistency(self):
-        # # update with only words the same size as the blank space
+        # update with only words the same size as the blank space
+        # fail the program if a variable has no possible domains
         for variable, domain in self.domains.items():
             list_words = []
             for word in crossword.words:
@@ -84,18 +89,15 @@ class Crossword_Solver:
         print()
 
     def solve(self, arc_consistency=False):
+        # driver code for the problem
         self.enforce_node_consistency()
         if arc_consistency: self.ac3()
         return self.backtrack_search(dict())
 
     def revise(self, x, y):
-        """
-        Make variable `x` arc consistent with variable `y`.
-        To do so, remove values from `self.domains[x]` for which there is no
-        possible corresponding value for `y` in `self.domains[y]`.
-        Return True if a revision was made to the domain of `x`; return
-        False if no revision was made.
-        """
+        # needs to make the variables x and y arc consistent
+        # does this by removing neighbors that won't work
+        # if no improvement, function returns false
         revised = False
         i, j = self.crossword.overlaps[x, y]
 
@@ -112,22 +114,16 @@ class Crossword_Solver:
 
         return revised
 
-    def ac3(self, arcs=None):
-
+    def ac3(self):
+        # runs ac3 algo and prunes down domains so vars are arc consistent
+        # start with all arcs and narrow down the domains by calling revise
+        # then print out vars and domains - ideally will be shorter
         print('\nDoing arc-consistency pre-processing...')
 
-        """
-        Update `self.domains` such that each variable is arc consistent.
-        If `arcs` is None, begin with initial list of all arcs in the problem.
-        Otherwise, use `arcs` as the initial list of arcs to make consistent.
-        Return True if arc consistency is enforced and no domains are empty;
-        return False if one or more domains end up empty.
-        """
-        if arcs is None:
-            arcs = list()
-            for x in self.domains:
-                for y in self.crossword.neighbors(x):
-                    arcs.append((x, y))
+        arcs = list()
+        for x in self.domains:
+            for y in self.crossword.neighbors(x):
+                arcs.append((x, y))
 
         while arcs:
             x, y = arcs.pop()
@@ -150,10 +146,8 @@ class Crossword_Solver:
         return False
 
     def consistent(self, assignment):
-        """
-        Return True if `assignment` is consistent (i.e., words fit in crossword
-        puzzle without conflicting characters); return False otherwise.
-        """
+        # true if word length is the right size and there are no conflicts
+        # repeated words are fine
         if len(assignment) == 1:
             return True
 
@@ -162,10 +156,6 @@ class Crossword_Solver:
             copy.pop(variable1)
 
             for variable2 in copy:
-                # ok if words repeat
-                # if assignment[variable1] == assignment[variable2]:
-                #     return False
-
                 crossing = self.crossword.overlaps[(variable1, variable2)]
                 if crossing is not None:
                     x = crossing[0]
@@ -175,35 +165,35 @@ class Crossword_Solver:
         return True
 
     def select_unassigned_variable(self, assignment):
-        best = None
+        # return unchosen var until no more exist
+        optimal_var = None
         for variable in self.crossword.variables - set(assignment):
-            if (best is None or
-                len(self.domains[variable]) < len(self.domains[best]) or
-                len(self.crossword.neighbors(variable)) > len(self.crossword.neighbors(best))):
-                    best = variable
-        return best
+            if (optimal_var is None or
+                len(self.domains[variable]) < len(self.domains[optimal_var]) or
+                len(self.crossword.neighbors(variable)) > len(self.crossword.neighbors(optimal_var))):
+                    optimal_var = variable
+        return optimal_var
 
     def order_domains_values(self, var, assignment):
-        """
-        Return a list of values in the domain of `var`, in order by
-        the number of values they rule out for neighboring variables.
-        The first value in the list, for example, should be the one
-        that rules out the fewest values among the neighbors of `var`.
-        """
-        n = dict()
+        # yield a list that goes highest to lowest of neighboring values for a var
 
+        odv_dict = dict()
         for value in self.domains[var]:
-            n[value] = 0
+            odv_dict[value] = 0
             for neighbor in self.crossword.neighbors(var) - set(assignment):
             # for neighbor in self.crossword.neighbors(var):
                 if value in self.domains[neighbor]:
-                    n[value] += 1
+                    odv_dict[value] += 1
 
-        return sorted(n, key=n.get)
+        return sorted(odv_dict, key=odv_dict.get)
 
     def backtrack_search(self, assignment):
+        # will recursively run until a solution is found - or no solution occurs
+        # to update the assignment, there can't be conflicts and vars have to be consistent
+        # global counter to count recursion calls
         global recursive_calls
         recursive_calls += 1
+
         if self.assignment_complete(assignment):
             return assignment
 
