@@ -1,11 +1,16 @@
 # How to Run
-./cons_solver.py
-
-python3 cons_solver.py xword00.txt dictionary_small.txt [opt: type anything for ac3]
-
+# needs python 3.8+
+# python3 cons_solver.py xword00.txt dictionary_small.txt [opt: type anything for ac3]
+cons_solver.py xword00.txt dictionary_small.txt [opt-ac3]  # shebang includes python @ top
 
 # References #
 
+# Piazza
+    # recursion counter
+# Office hours
+    # debug and strategy and understanding
+# Textbook
+    # material
 # Harvard AI Class
     # understand functions
         https://cs50.harvard.edu/ai/2020/projects/3/crossword/

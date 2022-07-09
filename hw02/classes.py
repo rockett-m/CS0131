@@ -175,32 +175,12 @@ class Crossword:
                         cells2.index(intersection)
                     )
 
-        # self.overlaps = dict()
-        # for var1 in self.variables:
-        #     for var2 in self.variables:
-        #         if var1 == var2:
-        #             continue
-        #         cells1 = var1.cells
-        #         cells2 = var2.cells
-        #
-        #         intersection = set(cells1).intersection(cells2)
-        #         if not intersection:
-        #             self.overlaps[var1, var2] = None
-        #         else:
-        #             intersection = intersection.pop()
-        #             self.overlaps[var1, var2] = (cells1.index(intersection), cells2.index(intersection))
-
     def neighbors(self, var):
-        # neighbors = []
-        # for v in self.variables:
-        #     if (v != var) and (self.intersections[v, var]):
-        #         neighbors.append(v)
-        # neighbors = set(neighbors)
-        # return neighbors
-        return set(
-            v for v in self.variables
-            if v != var and self.overlaps[v, var]
-        )
+        neighbors = []
+        for v in self.variables:
+            if (v != var) and (self.overlaps[v, var]):
+                neighbors.append(v)
+        return set(neighbors)
 
     def print_input_files(self):
         print(f'\n{self.width} x {self.height} crossword detected\n')
