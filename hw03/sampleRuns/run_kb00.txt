@@ -1,0 +1,20 @@
+$python forward_chain.py kb_00.txt 
+KB has 5 conditional clauses and 0 propositional symbols.
+
+   Clauses: p1 AND p2 AND p3 THEN p4
+            p4 AND p5 THEN p6
+            p1 THEN p2
+            p2 THEN p3
+            p7 THEN p1
+   Symbols: NONE
+
+Query symbol (or end): p1
+No. p1 is not entailed by out knowledge-base.
+
+Query symbol (or end): p2
+No. p2 is not entailed by out knowledge-base.
+
+Query symbol (or end): p3
+No. p3 is not entailed by out knowledge-base.
+
+Query symbol (or end): end

@@ -1,0 +1,5 @@
+p1 AND p2 AND p3 THEN p4
+p4 AND p5 THEN p6
+p1 THEN p2
+p2 THEN p3
+p7 THEN p1

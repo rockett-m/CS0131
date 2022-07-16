@@ -1,0 +1,7 @@
+This directory contains the following materials:
+
+[1] A PDF with instructions for the first assignment.
+
+[2] A folder of <inputData>, which contains two sample knowledge-base files.  Programs can be run on any file in the same format.
+
+[3] A folder of <sampleRuns>, which shows the output for a each of the files.  Generated from a Python implementation of the program.  Obviously, if one writes in another language, the commands to invoke the program may well be different, but program output should otherwise be as similar as possible to the examples given.

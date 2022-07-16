@@ -1,0 +1,5 @@
+p1 THEN p2
+p2 THEN p3
+p3 THEN p1
+p2
+p3

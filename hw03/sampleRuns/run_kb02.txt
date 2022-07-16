@@ -1,0 +1,35 @@
+$python forward_chain.py kb_02.txt 
+KB has 5 conditional clauses and 2 propositional symbols.
+
+   Clauses: p1 AND p2 AND p3 THEN p4
+            p4 AND p5 THEN p6
+            p1 THEN p2
+            p2 THEN p3
+            p7 THEN p1
+   Symbols: p5, p7
+
+Query symbol (or end): p1
+Yes! p1 is entailed by out knowledge-base.
+
+Query symbol (or end): p2
+Yes! p2 is entailed by out knowledge-base.
+
+Query symbol (or end): p3
+Yes! p3 is entailed by out knowledge-base.
+
+Query symbol (or end): p4
+Yes! p4 is entailed by out knowledge-base.
+
+Query symbol (or end): p5 
+Yes! p5 is entailed by out knowledge-base.
+
+Query symbol (or end): p6
+Yes! p6 is entailed by out knowledge-base.
+
+Query symbol (or end): p7
+Yes! p7 is entailed by out knowledge-base.
+
+Query symbol (or end): something_else
+No. something_else is not entailed by out knowledge-base.
+
+Query symbol (or end): end
