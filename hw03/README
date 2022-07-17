@@ -1,0 +1,42 @@
+# RUN
+# requires python 3.8+
+# python3 forward_chain.py inputData/kb_00.txt [debug]
+# end the program by typing 'end' at the prompt or pressing 'ctrl + c'
+
+# the first arg has to be the knowledge base file
+# any arg beyond that will turn on debug for verbose print statements and to see how the kb gets updated
+
+# a class object is formed from the beginning
+# the kb is created from parsing the file
+
+# if there are > 0 clauses, then update_kb() will run until the kb is fully updated
+# ( no new logic updates the symbols list ).
+
+# If we look at clauses in this example...
+
+   Clauses: p1 AND p2 AND p3 THEN p4
+            p7 THEN p1
+   Symbols: p7
+
+# I split my lines, separated by spaces into fields. If there was a length of 3 for fields, a p# THEN p#
+# is the only possible format, so I then check if the first elem (field[0]) is in the kb. If so, and if
+# the last elem (field[-1]) is not there, then we update the symbol list / kb, and pop that clause from
+# the clause list to check logic.
+# There are always an odd # of fields, so in other cases there have to be at least one AND. Therefore,
+# the program pops off the last two elems and pops out AND's to have a smaller list of symbols. If all
+# of these are in the kb, then we check the last elem (field[-1]) and update the kb accordingly.
+# If the last elem wasn't already in the kb, then we add it and pop that clause from the clause list.
+# This keeps going until we loop through all the clauses and there are no further updates to our symbol
+# list.
+
+# Since we have a list not a set, we only update unique elems to the symbols list if conditional logic
+# permits upon looping. If a clause is fully satisfied then it is popped from the clause list to improve
+# runtime and efficiency.
+
+# Our final symbols list is the domain that we just check the user input against to determine entailment.
+# If user input is in the list - then entailment occurs, otherwise it doesn't.
+
+
+
+
+
