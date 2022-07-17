@@ -2,7 +2,7 @@
 import os
 import sys
 import re
-from collections import OrderedDict
+
 
 class Knowledge_Base:
 
@@ -16,7 +16,8 @@ class Knowledge_Base:
     def parse_cli(self):
         # read user input on what knowledge base to use
         self.kbase_file = sys.argv[1]
-        if len(sys.argv) > 1:
+
+        if len(sys.argv) > 2:
             self.debug = True
         else:
             self.debug = False
