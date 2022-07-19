@@ -1,0 +1,47 @@
+%java BayesNet burglary.txt
+
+Loading file "burglary.txt"
+
+Burglary
+P(T) = 0.001, P(F) = 0.999
+
+JohnCalls | Alarm = T
+P(T) = 0.9, P(F) = 0.1
+
+Burglary | JohnCalls = T, MaryCalls = T
+P(T) = 0.284, P(F) = 0.716
+
+Alarm | Burglary = T
+P(T) = 0.94, P(F) = 0.06
+
+Alarm | Burglary = T, Earthquake = T
+P(T) = 0.95, P(F) = 0.05
+
+Alarm | Earthquake = F, Burglary = F
+P(T) = 0.001, P(F) = 0.999
+
+MaryCalls | Alarm = T
+P(T) = 0.7, P(F) = 0.3
+
+MaryCalls | Alarm = F
+P(T) = 0.01, P(F) = 0.99
+
+Burglary | Earthquake = T
+P(T) = 0.001, P(F) = 0.999
+
+Burglary | Earthquake = F
+P(T) = 0.001, P(F) = 0.999
+
+Burglary | Alarm = T
+P(T) = 0.374, P(F) = 0.626
+
+Burglary | Alarm = T, JohnCalls = F
+P(T) = 0.374, P(F) = 0.626
+
+JohnCalls | Burglary = T, Alarm = T
+P(T) = 0.9, P(F) = 0.1
+
+JohnCalls | Burglary = T, Earthquake = T, Alarm = T
+P(T) = 0.9, P(F) = 0.1
+
+quit

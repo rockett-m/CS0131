@@ -1,0 +1,22 @@
+Weapon T F
+NeuralDisruptor T F
+Overpower T F
+Disabled T F
+# Parents
+Disabled Weapon NeuralDisruptor Overpower
+# Tables
+Weapon
+0.8
+NeuralDisruptor 
+0.6
+Overpower
+0.5
+Disabled
+T T T 0.0
+T T F 1.0
+T F T 0.0
+T F F 0.1
+F T T 0.0
+F T F 0.0
+F F T 0.0
+F F F 0.0

@@ -1,0 +1,25 @@
+Burglary T F
+Earthquake T F
+Alarm T F
+JohnCalls T F
+MaryCalls T F
+# Parents
+Alarm Burglary Earthquake
+JohnCalls Alarm
+MaryCalls Alarm
+# Tables
+Burglary
+0.001
+Earthquake
+0.002
+Alarm
+T T 0.95
+T F 0.94
+F T 0.29
+F F 0.001
+JohnCalls
+T 0.90
+F 0.05
+MaryCalls
+T 0.70
+F 0.01

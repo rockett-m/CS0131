@@ -1,0 +1,30 @@
+Loading file "books.txt"
+
+Recommendation
+P(1) = 0.07, P(2) = 0.141, P(3) = 0.293, P(4) = 0.249, P(5) = 0.248
+
+Recommendation | Quality = 1
+P(1) = 0.602, P(2) = 0.089, P(3) = 0.101, P(4) = 0.125, P(5) = 0.083
+
+Recommendation | Quality = 5
+P(1) = 0.002, P(2) = 0.01, P(3) = 0.057, P(4) = 0.134, P(5) = 0.796
+
+Recommendation | Quality = 1, Kindness = 5
+P(1) = 0.48, P(2) = 0.1, P(3) = 0.1, P(4) = 0.1, P(5) = 0.22
+
+Recommendation | Quality = 3, Kindness = 5
+P(1) = 0, P(2) = 0, P(3) = 0.52, P(4) = 0.16, P(5) = 0.32
+
+Recommendation | Quality = 5, Kindness = 1, Honesty = F
+P(1) = 0.25, P(2) = 0.5, P(3) = 0.25, P(4) = 0, P(5) = 0
+
+Honesty | Recommendation = 1
+P(T) = 0.86, P(F) = 0.14
+
+Honesty | Recommendation = 1, Quality = 1
+P(T) = 0.983, P(F) = 0.017
+
+Honesty | Recommendation = 1, Quality = 1, Kindness = 5
+P(T) = 1, P(F) = 0
+
+quit

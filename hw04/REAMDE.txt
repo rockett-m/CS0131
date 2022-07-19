@@ -1,0 +1,7 @@
+This directory contains the following materials:
+
+[1] A PDF with instructions for the first assignment.
+
+[2] A folder of <inputData>, which contains four files describing Bayes Nets, using the format described in the PDF.
+
+[3] A folder of <sampleRuns>, which shows the output for a variety of queries on each of the Bayes Nets.

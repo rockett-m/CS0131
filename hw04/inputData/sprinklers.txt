@@ -1,0 +1,22 @@
+Cloudy T F
+Sprinkler T F
+Rain T F
+WetGrass T F
+# Parents
+Sprinkler Cloudy
+Rain Cloudy
+WetGrass Sprinkler Rain
+# Tables
+Cloudy
+0.5
+Sprinkler
+T 0.5
+F 0.9
+Rain
+T 0.8
+F 0.2
+WetGrass
+F F 1.0
+T F 0.1
+F T 0.1
+T T 0.01

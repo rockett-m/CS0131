@@ -1,0 +1,30 @@
+Loading file "data.txt"
+
+Disabled    
+P(T) = 0.256, P(F) = 0.744
+
+Disabled | Weapon = T
+P(T) = 0.32, P(F) = 0.68
+
+Disabled | Weapon = T, NeuralDisruptor = T
+P(T) = 0.5, P(F) = 0.5
+
+Disabled | Weapon = T, NeuralDisruptor = F
+P(T) = 0.05, P(F) = 0.95
+
+Disabled | Overpower = T
+P(T) = 0, P(F) = 1
+
+Weapon | Disabled = F
+P(T) = 0.731, P(F) = 0.269
+
+Weapon | Disabled = T
+P(T) = 1, P(F) = 0
+
+NeuralDisruptor | Disabled = F
+P(T) = 0.484, P(F) = 0.516
+
+NeuralDisruptor | Disabled = T
+P(T) = 0.938, P(F) = 0.062
+
+quit
