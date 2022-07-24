@@ -10,8 +10,9 @@ class Bayes_Net:
     def __init__(self, Model):
         self.Model = Model
 
-        self.domains = self.Model.Variables
-        self.input_file = ''
+        # self.domains = self.Model.Variables
+        self.Model.parse_input_file()
+        self.Model.print_variable_dict()
 
 
 
@@ -38,3 +39,30 @@ if __name__ == "__main__":
     bayes_net = Bayes_Net(model)
 
     sys.exit()
+
+
+# recreate the network
+
+# write own data structure
+
+# create a graph
+
+# make node class with prob and children and parents
+
+"""
+# Parents
+Disabled Weapon NeuralDisruptor Overpower
+^ child   ^ parents  ^          ^
+
+
+
+P(alarm | burglary) = P(alarm | burglary, earthquake = false) + P(alarm | burglary, earthquake = true)
+
+
+
+P(john) = 0.9 * P(alarm)
+P(john) = 0.9  * P(alarm) = 0.9 * P(alarm| earthquake, burglarly)
+P(john) = p(john| alarm =true) + P(john| alarm = false)
+p(john) = 0.9 * p(alarm = true)_ + 0.05 * P(alarm=false)
+
+"""
