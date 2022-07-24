@@ -8,13 +8,13 @@ class Variable_Node:
         self.name = name
         self.domains = domain
         self.parents = []
-        self.truth_table = []
+        self.cond_prob_table = []
 
     def add_parents(self, parents: list):
         self.parents = parents
 
-    def update_truth_table(self, table_line: list):
-        self.truth_table.append(table_line)
+    def update_cond_prob_table(self, table_line: list):
+        self.cond_prob_table.append(table_line)
 
 
 class Model:
@@ -33,17 +33,15 @@ class Model:
             self.debug = False
 
         if not os.path.isfile(self.input_file):
-            print(f'file not found: {self.input_file = }\n')
-            sys.exit("run: python bayes_net.py burglary.txt ")
+            print(f'\nfile not found: {self.input_file = }\n')
+            sys.exit("\nrun: python bayes_net.py burglary.txt\n")
+        else:
+            print(f'\nLoading file "{self.input_file}"\n')
 
     def parse_input_file(self):
         with open(self.input_file, 'r') as fi:
-            key = ''
             section = "Variables"
-
-            iter_length = 0
-            count = 0
-            node_name = ''
+            iter_length = 0; count = 0; node_name = ''
 
             for line in fi:
                 line = line.strip()
@@ -116,18 +114,16 @@ class Model:
                         # print(f'{node_name} : {iter_length = } : {count = }')
                         if node_name in self.Variables.keys():
                             node = self.Variables[node_name]
-                            node.update_truth_table(fields)
+                            node.update_cond_prob_table(fields)
                             self.Variables.update({node.name:node})
 
                         if iter_length == 0:  # case for just value listed   0.001
                             node_name = ''; count = 0; iter_length = 0
-                        elif count == iter_length - 1:  # done with current truth table
+                        elif count == iter_length - 1:  # done with current cond_prob_table
                             node_name = ''; count = 0; iter_length = 0
                         else:
                             count += 1
 
-
-
     def print_variable_dict(self):
         for k,v in self.Variables.items():
-            print(f'{k = } : {v = } : {v.name = } : {v.domains = } {v.parents = } : {v.truth_table = }\n')
+            print(f'{k = } : {v = } : {v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }\n')
