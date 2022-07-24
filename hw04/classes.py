@@ -113,8 +113,7 @@ class Model:
                         continue
 
                     if node_name != '':  # not nothing
-                        print(f'{node_name} : {iter_length = } : {count = }')
-                        probability = fields[-1]  # last field will be the number
+                        # print(f'{node_name} : {iter_length = } : {count = }')
                         if node_name in self.Variables.keys():
                             node = self.Variables[node_name]
                             node.update_truth_table(fields)
