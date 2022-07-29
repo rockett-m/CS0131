@@ -12,6 +12,9 @@ class Bayes_Net:
 
         # self.domains = self.Model.Variables
         self.Model.parse_input_file()
+
+        self.Model.build_verbose_cpt()
+
         if self.Model.debug:
             self.Model.print_variable_dict()
 
@@ -99,8 +102,11 @@ if __name__ == "__main__":
 
     bayes_net = Bayes_Net(model)
 
+    # bayes_net.
     while True:
-        bayes_net.prompt_user()
+        pass
+        sys.exit()
+        # bayes_net.prompt_user()  # calls calc probability
     # https://github.com/MaxHalford/sorobn
 
 # recreate the network

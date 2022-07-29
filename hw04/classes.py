@@ -9,12 +9,17 @@ class Variable_Node:
         self.domains = domain
         self.parents = []
         self.cond_prob_table = []
+        self.verbose_cpt = []
+        self.base_case = False
 
     def add_parents(self, parents: list):
         self.parents = parents
 
     def update_cond_prob_table(self, table_line: list):
         self.cond_prob_table.append(table_line)
+
+    def update_verbose_cpt(self, table: list):
+        self.verbose_cpt = table
 
 
 class Model:
@@ -43,6 +48,7 @@ class Model:
             section = "Variables"
             iter_length = 0; count = 0; node_name = ''
 
+            line_count = 0
             for line in fi:
                 line = line.strip()
                 fields = line.split(' ')
@@ -65,6 +71,9 @@ class Model:
                     """
 
                     var = Variable_Node(name=fields[0], domain=fields[1:])
+
+                    if line_count == 0: var.base_case = True
+
                     self.Variables.update({var.name:var})
 
                 elif section == "Parents":  # parents
@@ -124,6 +133,54 @@ class Model:
                         else:
                             count += 1
 
+                line_count += 1
+
+    def build_verbose_cpt(self):
+
+        for k, v in self.Variables.items():
+
+            node_name = k
+            node = v
+
+            len_line = len(node.cond_prob_table[0])
+            num_lines = len(node.cond_prob_table)
+
+            # print(f'{len_line = }\t{num_lines = }')
+
+            new_table = []
+
+            if num_lines == 1 and len_line == 1:
+
+                newline = []
+                field = f'{node_name} = T'
+                newline.append(field)
+
+                prob = v.cond_prob_table[0][0]
+                newline.append(prob)
+                new_table.append(newline)
+
+            else:
+
+                for line in node.cond_prob_table:
+                    newline = []
+
+                    for iter in range(len(line)):
+                        if iter != len_line - 1:
+                            field = f'{node.parents[iter]} = {line[iter]}'  # "Earthquake = T"
+                            newline.append(field)
+                        else:
+                            field = f'{line[iter]}'
+                            newline.append(field)
+
+                    new_table.append(newline)
+
+            node.update_verbose_cpt(new_table)
+            self.Variables.update({node_name:node})
+
+
     def print_variable_dict(self):
         for k,v in self.Variables.items():
-            print(f'{k = } : {v = } : {v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }\n')
+            # print(f'{k = } :\n{v = } : {v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }\n')
+            print(f'{k = } :\n{v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }')
+            print(f'{v.base_case = }')
+            print(f'{v.verbose_cpt = }\n')
