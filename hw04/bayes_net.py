@@ -6,17 +6,31 @@ from collections import OrderedDict
 from classes import *
 
 
+def prompt_user(bayes_net):
+    # global args
+    # prompt user for symbol until 'end' is typed
+    user_input = input()
+    user_input.strip()  # remove newline
+    cond = []; args = []
+
+    fields = user_input.split(' | ')  # requires space between |
+    if len(fields) == 2:
+        cond = fields[-1].split(', ')
+
+    args.insert(0, fields[0])
+    args += cond
+
+    if user_input != "quit":
+        bayes_net.calculate_probability(args)
+    else:
+        sys.exit(f'{user_input}\n')
+
+
 class Bayes_Net:
     def __init__(self, Model):
         self.Model = Model
 
-        # self.domains = self.Model.Variables
-        self.Model.parse_input_file()
-
-        self.Model.build_verbose_cpt()
-
-        if self.Model.debug:
-            self.Model.print_variable_dict()
+        self.Model.enumeration_ask()  # calls self.Model.enumeration_all() inside
 
 
     def calculate_probability(self, args: list):
@@ -59,10 +73,8 @@ class Bayes_Net:
                 if cond in node.parents:
                     location = node.parents.index(cond)
 
-
             else:
                 print(f'\n{args = } not all found in conditional probability table\n')
-
 
         elif len(args) == 3:
             cond1 = args[1]; cond2 = args[2]
@@ -76,24 +88,6 @@ class Bayes_Net:
         else:
             print(f'not found: {args = }\n')
 
-#
-    def prompt_user(self):
-        # prompt user for symbol until 'end' is typed
-        user_input = input()
-        user_input.strip()  # remove newline
-        cond = []; args = []
-
-        fields = user_input.split(' | ')  # requires space between |
-        if len(fields) == 2:
-            cond = fields[-1].split(', ')
-
-        args.insert(0, fields[0])
-        args += cond
-
-        if user_input != "quit":
-            self.calculate_probability(args)
-        else:
-            sys.exit(f'{user_input}\n')
 
 
 if __name__ == "__main__":
@@ -105,6 +99,7 @@ if __name__ == "__main__":
     # bayes_net.
     while True:
         pass
+        prompt_user(bayes_net)
         sys.exit()
         # bayes_net.prompt_user()  # calls calc probability
     # https://github.com/MaxHalford/sorobn

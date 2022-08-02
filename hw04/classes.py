@@ -2,18 +2,25 @@ import sys
 import os
 import re
 from collections import OrderedDict
+import networkx as nx
+import matplotlib.pyplot as plt
+
 
 class Variable_Node:
     def __init__(self, name: str, domain: list):
         self.name = name
         self.domains = domain
         self.parents = []
+        self.children = []
         self.cond_prob_table = []
         self.verbose_cpt = []
         self.base_case = False
 
     def add_parents(self, parents: list):
         self.parents = parents
+
+    def add_children(self, children: list):
+        self.children = children
 
     def update_cond_prob_table(self, table_line: list):
         self.cond_prob_table.append(table_line)
@@ -24,9 +31,18 @@ class Variable_Node:
 
 class Model:
     def __init__(self):
+        # self.graph = nx.DiGraph()
         self.input_file = ''
         self.Variables = OrderedDict()
+
         self.parse_cli()
+        self.parse_input_file()
+        self.build_verbose_cpt()
+        self.create_acyclic_graph()
+
+        if self.debug:
+            self.display_graph()
+            self.print_variable_dict()
 
     def parse_cli(self):
         # read user input on what knowledge base to use
@@ -177,10 +193,95 @@ class Model:
             node.update_verbose_cpt(new_table)
             self.Variables.update({node_name:node})
 
-
     def print_variable_dict(self):
         for k,v in self.Variables.items():
             # print(f'{k = } :\n{v = } : {v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }\n')
             print(f'{k = } :\n{v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }')
             print(f'{v.base_case = }')
             print(f'{v.verbose_cpt = }\n')
+
+    def create_acyclic_graph(self):
+
+        G = nx.DiGraph()
+
+        for k,v in self.Variables.items():
+            node_name = k
+            node = v
+            G.add_node(node_name)
+            G.nodes[node_name]['object'] = node
+
+        for k,v in self.Variables.items():
+            node_name = k
+            node = v
+            if len(node.parents) > 0:
+
+                for parent in node.parents:
+
+                    G.add_edge(parent, node_name)
+
+                    if self.debug:
+                        print(f'{parent = }: {node.name = }')
+
+        self.graph = G
+
+    def display_graph(self):
+
+        nx.draw_networkx(self.graph)
+        plt.show()
+
+# create BST of vars
+# adjacency lists
+#     https://www.pythonpool.com/adjacency-list-python/
+# for each node, which nodes are direct path
+
+    # def enumeration_ask(self, X, e, bn):
+    def enumeration_ask(self, X, e):
+        # bn = self.
+        for edge in self.graph.edges:
+            print(f'{edge = }')
+
+            parent = edge[0]
+            child =  edge[1]
+
+
+            number = self.enumeration_all(vars, e)
+
+        normalized_qx = normalize_qx()
+        return normalized_qx
+
+        """
+        for node in self.graph:
+            print(f'{node = }') #: {node['object'] = }")        
+        """
+
+    # def enumeration_all(self, vars, e):
+    def enumerate_all(self, e):
+        vars = self.Variables
+        number = 0
+
+        if len(vars) == 0:
+            return 1.0
+
+        for V in vars:
+            # if V is an evidence variable with value v in e
+            if V:  # an evidence variable with value v in e
+                # return P(v | parents(V )) × enumerate_all(REST(vars),e))
+                probability = 0
+                return probability
+
+            else:
+                sum_v = 0
+                # !v P(v | parents(V)) × enumerate_all(REST(vars), ev)
+                # where ev is e extended with V = v
+                return sum_v
+
+        return number
+
+    def normalize_qX(self, X):
+
+        normalized_qx = 0
+
+        for i in X:
+            pass
+
+        return normalized_qx
