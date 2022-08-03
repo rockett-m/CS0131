@@ -3,6 +3,10 @@ import os
 import sys
 import re
 from collections import OrderedDict
+import numpy as np
+from functools import *
+from utils import *
+
 from classes import *
 
 
@@ -31,7 +35,8 @@ class Bayes_Net:
         self.Model = Model
 
         # self.Model.enumeration_ask()  # calls self.Model.enumeration_all() inside
-        self.Model.enumeration_ask()  # calls self.Model.enumeration_all() inside
+        # enumeration_ask(X=, evidence=, net=Model)  # calls self.Model.enumeration_all() inside
+        # self.Model.print_cpt()
 
 
     def calculate_probability(self, args: list):
@@ -91,11 +96,142 @@ class Bayes_Net:
 
 
 
+class ProbDist:
+    """A discrete probability distribution. You name the random variable
+    in the constructor, then assign and query probability of values.
+    # >>> P = ProbDist('Flip'); P['H'], P['T'] = 0.25, 0.75; P['H']
+    0.25
+    # >>> P = ProbDist('X', {'lo': 125, 'med': 375, 'hi': 500})
+    # >>> P['lo'], P['med'], P['hi']
+    (0.125, 0.375, 0.5)
+    """
+
+    def __init__(self, var_name='?', freq=None):
+        """If freq is given, it is a dictionary of values - frequency pairs,
+        then ProbDist is normalized."""
+        self.prob = {}
+        self.var_name = var_name
+        self.values = []
+        if freq:
+            for (v, p) in freq.items():
+                self[v] = p
+            self.normalize()
+
+    def __getitem__(self, val):
+        """Given a value, return P(value)."""
+        try:
+            return self.prob[val]
+        except KeyError:
+            return 0
+
+    def __setitem__(self, val, p):
+        """Set P(val) = p."""
+        if val not in self.values:
+            self.values.append(val)
+        self.prob[val] = p
+
+    def normalize(self):
+        """Make sure the probabilities of all values sum to 1.
+        Returns the normalized distribution.
+        Raises a ZeroDivisionError if the sum of the values is 0."""
+        total = sum(self.prob.values())
+        if not np.isclose(total, 1.0):
+            for val in self.prob:
+                self.prob[val] /= total
+        return self
+
+    def show_approx(self, numfmt='{:.3g}'):
+        """Show the probabilities rounded and sorted by key, for the
+        sake of portable doctests."""
+        return ', '.join([('{}: ' + numfmt).format(v, p) for (v, p) in sorted(self.prob.items())])
+
+    def __repr__(self):
+        return "P({})".format(self.var_name)
+
+
+def normalize(dist):
+    "Normalize a {key: value} distribution so values sum to 1.0. Mutates dist and returns it."
+    total = sum(dist.values())
+    for key in dist:
+        dist[key] = dist[key] / total
+        assert 0 <= dist[key] <= 1, "Probabilities must be between 0 and 1."
+    return dist
+
+def enumeration_ask(X, e, bn):
+    """
+    [Figure 14.9]
+    Return the conditional probability distribution of variable X
+    given evidence e, from BayesNet bn.
+    # >>> enumeration_ask('Burglary', dict(JohnCalls=T, MaryCalls=T), burglary
+    # ...  ).show_approx()
+    'False: 0.716, True: 0.284'"""
+    assert X not in e, "Query variable must be distinct from evidence"
+    # Q = ProbDist(X)
+    Q = dict()
+
+    for xi in bn.Variables[X].domains:
+        extend_list = [e]
+        extend_list.append(X)
+        extend_list.append(xi)
+
+        Q[xi] = enumerate_all(list(bn.Variables.keys()), extend_list, bn)
+        print(f'{Q[xi] = }')
+        # Q[xi] = enumerate_all(list(bn.Variables.keys()), list(e + X + xi), bn)
+
+    print(Q)
+
+    return Q.normalize()
+
+
+def enumerate_all(variables, e, bn):
+    """Return the sum of those entries in P(variables | e{others})
+    consistent with e, where P is the joint distribution represented
+    by bn, and e{others} means e restricted to bn's other variables
+    (the ones other than variables). Parents must precede children in variables."""
+    if not variables:
+        return 1.0
+
+    Y, rest = variables[0], variables[1:]
+    Ynode = bn.Variables[Y]
+
+    if Y in e:
+        return Ynode.p(e[Y], e) * enumerate_all(rest, e, bn)
+    else:
+
+        total_sum = 0
+
+        for y in bn.Variables[Y].domains:
+            extend_list = [e]
+            extend_list.append(Y)
+            extend_list.append(y)
+
+            sum1 = Ynode.p(y, e)
+            sum2 = enumerate_all(rest, extend_list, bn)
+            prod = sum1 * sum2
+            total_sum += prod
+
+        return total_sum
+
+        # return sum(Ynode.p(y, e) * enumerate_all(rest, extend(e, Y, y), bn)
+        #            for y in bn.Variables[Y].domains)
+
+
+
 if __name__ == "__main__":
 
     model = Model()
 
     bayes_net = Bayes_Net(model)
+
+
+    # query = args[0]
+    # evidence = args[1:]
+
+    Q_norm = enumeration_ask(X='Burglary', e='Alarm', bn=bayes_net.Model)
+
+    print(f'{Q_norm = }')
+    sys.exit()
+    # bayes_net.Model.Variables
 
     # bayes_net.
     while True:
