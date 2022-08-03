@@ -30,6 +30,7 @@ class Bayes_Net:
     def __init__(self, Model):
         self.Model = Model
 
+        # self.Model.enumeration_ask()  # calls self.Model.enumeration_all() inside
         self.Model.enumeration_ask()  # calls self.Model.enumeration_all() inside
 
 
@@ -98,7 +99,6 @@ if __name__ == "__main__":
 
     # bayes_net.
     while True:
-        pass
         prompt_user(bayes_net)
         sys.exit()
         # bayes_net.prompt_user()  # calls calc probability
