@@ -265,3 +265,40 @@ P(john) = p(john| alarm =true) + P(john| alarm = false)
 p(john) = 0.9 * p(alarm = true)_ + 0.05 * P(alarm=false)
 
 """
+
+
+
+
+
+
+# # def enumeration_all(self, vars, e):
+# def enumerate_all(self, e):
+#     vars = self.Variables
+#     number = 0
+#
+#     if len(vars) == 0:
+#         return 1.0
+#
+#     for V in vars:
+#         # if V is an evidence variable with value v in e
+#         if V:  # an evidence variable with value v in e
+#             # return P(v | parents(V )) × enumerate_all(REST(vars),e))
+#             probability = 0
+#             return probability
+#
+#         else:
+#             sum_v = 0
+#             # !v P(v | parents(V)) × enumerate_all(REST(vars), ev)
+#             # where ev is e extended with V = v
+#             return sum_v
+#
+#     return number
+
+# def normalize_qX(self, X):
+#
+#     normalized_qx = 0
+#
+#     for i in X:
+#         pass
+#
+#     return normalized_qx
