@@ -16,6 +16,7 @@ class Variable_Node:
         self.children = []
         self.cond_prob_table = []
         self.verbose_cpt = []
+        self.tuple_cpt = []
         self.base_case = False
 
     def add_parents(self, parents: list):
@@ -275,10 +276,34 @@ class Model:
             print(f'{node = }') #: {node['object'] = }")        
         """
 
+    def convert_cpt_tuple(self):
+        for k,v in self.Variables.items():
+            new_cpt = {}
+            # print(f'{k = } : {v.cond_prob_table = }')
 
+            for line in v.cond_prob_table:
+                print(f'{line = }')
+                vals = line[:-1]
+                prob = line[-1]
+                result = []
+                for i in vals:
+                    print(f'{i = }')
+                    res = re.match(r"(.*)\b([TF0-9]+)\b(.*)", i)
+                    print(res)
+                    result.append(res.group(2))
 
+                print(f'\n{result = }')
+                index = tuple(vals)
+                # index.strip("'")
+                print(index)
+                new_cpt[index] = prob
 
+            v.tuple_cpt = new_cpt
 
+            print(f'{k = }')
+            for key, val in v.tuple_cpt.items():
+                print(key, val)
+            print(f'{v.tuple_cpt = }\n')
 
 
 

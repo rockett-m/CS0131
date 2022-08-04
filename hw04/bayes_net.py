@@ -34,6 +34,7 @@ class Bayes_Net:
     def __init__(self, Model):
         self.Model = Model
 
+        # self.Model.convert_cpt_tuple()
         # self.Model.enumeration_ask()  # calls self.Model.enumeration_all() inside
         # enumeration_ask(X=, evidence=, net=Model)  # calls self.Model.enumeration_all() inside
         # self.Model.print_cpt()
@@ -166,8 +167,8 @@ def enumeration_ask(X, e, bn):
     # ...  ).show_approx()
     'False: 0.716, True: 0.284'"""
     assert X not in e, "Query variable must be distinct from evidence"
-    # Q = ProbDist(X)
-    Q = dict()
+    Q = ProbDist(X)
+    # Q = dict()
 
     for xi in bn.Variables[X].domains:
         extend_list = [e]
@@ -188,8 +189,7 @@ def enumerate_all(variables, e, bn):
     consistent with e, where P is the joint distribution represented
     by bn, and e{others} means e restricted to bn's other variables
     (the ones other than variables). Parents must precede children in variables."""
-    if not variables:
-        return 1.0
+    if not variables: return 1.0
 
     Y, rest = variables[0], variables[1:]
     Ynode = bn.Variables[Y]
