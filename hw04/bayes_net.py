@@ -158,7 +158,8 @@ def normalize(dist):
         assert 0 <= dist[key] <= 1, "Probabilities must be between 0 and 1."
     return dist
 
-def enumeration_ask(X, e, bn):
+
+def enumeration_ask(X: list, e: list, bn):
     """
     [Figure 14.9]
     Return the conditional probability distribution of variable X
@@ -166,55 +167,153 @@ def enumeration_ask(X, e, bn):
     # >>> enumeration_ask('Burglary', dict(JohnCalls=T, MaryCalls=T), burglary
     # ...  ).show_approx()
     'False: 0.716, True: 0.284'"""
-    assert X not in e, "Query variable must be distinct from evidence"
-    Q = ProbDist(X)
-    # Q = dict()
+    X = str(X[0])  # first and only elem of list
+    vars = list(bn.Variables.keys())
 
-    for xi in bn.Variables[X].domains:
-        extend_list = [e]
-        extend_list.append(X)
-        extend_list.append(xi)
+    evidence_dict = OrderedDict()
+    # evidence_no_vals = []
+    for i in e:
+        j = i.split(' = ')[0]  # 'Earthquake = T' => 'Earthquake'
+        evidence_dict[i.split(' = ')[0]] = i.split(' = ')[1]   # evidence_dict['Earthquake'] = 'T'
+        # evidence_no_vals.append(j)
 
-        Q[xi] = enumerate_all(list(bn.Variables.keys()), extend_list, bn)
+    assert X not in evidence_dict.keys(), "Query variable must be distinct from evidence"
+    Q = OrderedDict()
+
+    for xi in bn.Variables[X].domains:  # T, F
+        # add to dict
+        evidence_dict[X] = xi  # 'Alarm' = 'T'
+        Q[xi] = enumerate_all(vars=bn.Variables, evidence=evidence_dict, bayes_net=bn)  # Q['T'] = 0.001
+
+    return normalize(Q)  # {Q['T'] = 0.001, Q['F'] = 0.999}
+    """
+
+    # X_order = bn.Variables[X].parents.copy()
+    # X_order.append(bn.Variables[X].name)
+    # print(f'{X_order = }')
+
+    evidence_sorted = []
+    parents = bn.Variables[X].parents
+    for elem in evidence_no_vals:
+        # sort evidence input list according to parents
+        pass
+
+
+    for xi in bn.Variables[X].domains:  # for each value xi of X do
+
+        node_val = f'{bn.Variables[X].name} = {xi}'
+
+        extend_list = e; extend_list.append(node_val)
+
+        cpt_key = ''
+        for i in extend_list:
+            cpt_key += f"{i.split(' = ')[1]}."
+        cpt_key = cpt_key[:-1]; print(f'{cpt_key = }')
+
+        evidence_no_vals.append(X)  #; evidence_no_vals.append(xi)
+
+        print(f'{extend_list = }'); print(f'{evidence_no_vals = }')
+
+        Q[xi] = enumerate_all(vars, extend_list, evidence_no_vals, cpt_key, bn)
         print(f'{Q[xi] = }')
         # Q[xi] = enumerate_all(list(bn.Variables.keys()), list(e + X + xi), bn)
 
-    print(Q)
+    normalized_Q = normalize(Q)
+    print(f'{Q = }, {normalized_Q = }')
 
-    return Q.normalize()
+    return normalized_Q
+    """
 
 
-def enumerate_all(variables, e, bn):
-    """Return the sum of those entries in P(variables | e{others})
-    consistent with e, where P is the joint distribution represented
-    by bn, and e{others} means e restricted to bn's other variables
-    (the ones other than variables). Parents must precede children in variables."""
+def enumerate_all(vars: dict, evidence: dict, bayes_net):
+
+    if len(vars) == 0: return 1.0
+
+    var_names = list(vars.keys())
+    V, rest = var_names[0], var_names[1:]
+
+    rest_dict = OrderedDict()
+    for elem in rest:
+        if elem in vars.keys():
+            rest_dict.update({elem:vars[elem]})
+
+    Vnode = vars[V]
+    print(f'{V = } : {rest = } : {Vnode = }')
+
+    if V in evidence.keys():
+
+        row = ''  # create the cpt row now
+        for parent in vars[V].parents:  # ['Burglary', 'Earthquake']
+            row += f'{evidence[parent]}.'  # T.
+
+        row += evidence[V]  # 0.99  # exact cpt row match expected like 'T.T.T' = 0.99
+        # if row in vars[V].big_cpt.keys():
+        cpt_prob =  vars[V].big_cpt[row]  # 'T.T.T' = 0.99
+
+        return cpt_prob * enumerate_all(vars=rest_dict, evidence=evidence, bayes_net=bayes_net)
+
+    else: # no exact match found in cpt
+        total = 0
+        evidenceV = evidence.copy()
+        for domain_val in vars[V].domains:
+
+            row = ''  # create the cpt row now
+            for parent in vars[V].parents:  # ['Burglary', 'Earthquake']
+                row += f'{evidence[parent]}.'  # T.
+
+            row += domain_val  # 0.99  # exact cpt row match expected like 'T.T.T' = 0.99
+
+            cpt_prob =  vars[V].big_cpt[row]  # 'T.T.T' = 0.99
+
+            total += (cpt_prob * enumerate_all(vars=rest_dict, evidence=evidenceV, bayes_net=bayes_net))
+
+        return total
+
+
+'''
+
+def enumerate_all(variables: list, e: list, evidence_no_vals: list, cpt_key: str, bn):
+    # """Return the sum of those entries in P(variables | e{others})
+    # consistent with e, where P is the joint distribution represented
+    # by bn, and e{others} means e restricted to bn's other variables
+    # (the ones other than variables). Parents must precede children in variables."""
     if not variables: return 1.0
 
     Y, rest = variables[0], variables[1:]
     Ynode = bn.Variables[Y]
 
-    if Y in e:
+    # e_without_vals = []
+    # for i in e:
+    #     j = i.split(' = ')[0]  # 'Earthquake = T' => 'Earthquake'
+    #     e_without_vals.append(j)
+
+    if Y in evidence_no_vals:  # ['Burglary', 'Earthquake']
+    # if Y in e:
+        # lookup = ''
+        # for keys in Ynode.big_cpt.keys():
+        # parents order matters
+        # lookup in cpt \/
         return Ynode.p(e[Y], e) * enumerate_all(rest, e, bn)
     else:
 
         total_sum = 0
+        # for y in bn.Variables[Y].domains:
+        for line in bn.Variables[Y].cond_prob_table.items():
+            for ln in line:
+                y = ln[-1]
 
-        for y in bn.Variables[Y].domains:
-            extend_list = [e]
-            extend_list.append(Y)
-            extend_list.append(y)
+                extend_list = [e]; extend_list.append(Y); extend_list.append(y)
 
-            sum1 = Ynode.p(y, e)
-            sum2 = enumerate_all(rest, extend_list, bn)
-            prod = sum1 * sum2
-            total_sum += prod
+                sum1 = Ynode.p(y, e)
+                sum2 = enumerate_all(rest, extend_list, bn)
+                prod = sum1 * sum2
+                total_sum += prod
 
         return total_sum
 
         # return sum(Ynode.p(y, e) * enumerate_all(rest, extend(e, Y, y), bn)
         #            for y in bn.Variables[Y].domains)
-
+'''
 
 
 if __name__ == "__main__":
@@ -227,9 +326,17 @@ if __name__ == "__main__":
     # query = args[0]
     # evidence = args[1:]
 
-    Q_norm = enumeration_ask(X='Burglary', e='Alarm', bn=bayes_net.Model)
+    Q_norm = enumeration_ask(X=['Alarm'], e=['Burglary = T', 'Earthquake = T'], bn=bayes_net.Model)  # P(T) = 0.95		P(F) = 0.05
+    # Q_norm = enumeration_ask(X=['Alarm'], e=['Earthquake = F', 'Burglary = F'], bn=bayes_net.Model)  # P(T) = 0.001		P(F) = 0.999
+    # Q_norm = enumeration_ask(X=['Burglary'], e=['Alarm = T', 'JohnCalls = F'], bn=bayes_net.Model)  # P(T) = 0.001		P(F) = 0.999
 
-    print(f'{Q_norm = }')
+
+
+    print(); output = ''
+    for k,v in Q_norm.items():
+        output += f'P({k}) = {round(v, 3)}\t\t'
+    print(output)
+
     sys.exit()
     # bayes_net.Model.Variables
 
@@ -302,3 +409,32 @@ p(john) = 0.9 * p(alarm = true)_ + 0.05 * P(alarm=false)
 #         pass
 #
 #     return normalized_qx
+
+#
+#
+# def event_values(event, variables):
+#     """Return a tuple of the values of variables in event.
+#     # >>> event_values ({'A': 10, 'B': 9, 'C': 8}, ['C', 'A'])
+#     (8, 10)
+#     # >>> event_values ((1, 2), ['C', 'A'])
+#     (1, 2)
+#     """
+#     if isinstance(event, tuple) and len(event) == len(variables):
+#         return event
+#     else:
+#         return tuple([event[var] for var in variables])
+#
+
+    # def p(self, value, event):
+    #     """
+    #     Return the conditional probability
+    #     P(X=value | parents=parent_values), where parent_values
+    #     are the values of parents in event. (event must assign each
+    #     parent a value.)
+    #     # >>> bn = BayesNode('X', 'Burglary', {T: 0.2, F: 0.625})
+    #     # >>> bn.p(False, {'Burglary': False, 'Earthquake': True})
+    #     0.375
+    #     """
+    #     assert isinstance(value, bool)
+    #     ptrue = self.cond_prob_table[event_values(event, self.parents)]
+    #     return ptrue if value else 1 - ptrue

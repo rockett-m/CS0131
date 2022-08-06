@@ -17,6 +17,7 @@ class Variable_Node:
         self.cond_prob_table = []
         self.verbose_cpt = []
         self.tuple_cpt = []
+        self.big_cpt = OrderedDict()
         self.base_case = False
 
     def add_parents(self, parents: list):
@@ -42,6 +43,8 @@ class Model:
         self.parse_input_file()
         self.build_verbose_cpt()
         self.create_acyclic_graph()
+
+        self.create_big_cpt()
 
         if self.debug:
             # self.display_graph()
@@ -304,4 +307,52 @@ class Model:
             for key, val in v.tuple_cpt.items():
                 print(key, val)
             print(f'{v.tuple_cpt = }\n')
+
+    def create_big_cpt(self):
+
+        for node_name, node in self.Variables.items():
+
+            new_cpt = OrderedDict()
+            # new_row_count = pow(2, len(node.parents))
+
+            for line in node.cond_prob_table:
+                key = ''
+                parents = line[:-1]
+                prob = line[-1]
+                for i in parents:
+                    key += f'{i}.'
+
+                count = 0
+                for d in node.domains:  # T, F
+                    new_key = key
+                    new_key += f'{d}'
+                    if count == 0:
+                        new_cpt[new_key] = float(prob)
+                    else:
+                        new_cpt[new_key] = round(1 - float(prob), 3)
+
+                    count += 1
+
+            node.big_cpt = new_cpt
+
+            self.Variables.update({node_name:node})
+
+        print(f'format:\tparents then child domain\texample: ')
+        print(f'parent=Burglary, parent=Earthquake, child=Alarm')
+        print(f'domains=T,F')
+        print(f'''key = 'Alarm'
+                    B E A : Probability
+                    T.T.T : v = 0.95
+                    T.T.F : v = 0.05
+                    T.F.T : v = 0.94
+                    T.F.F : v = 0.06
+                    F.T.T : v = 0.29
+                    F.T.F : v = 0.71
+                    F.F.T : v = 0.001
+                    F.F.F : v = 0.999''')
+        for key,val in self.Variables.items():
+            print(f'{key = }')
+            for k,v in val.big_cpt.items():
+                print(f'{k} : {v = }')
+
 
