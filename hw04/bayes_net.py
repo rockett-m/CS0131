@@ -164,6 +164,10 @@ def normalize(dist):
 
 def enumeration_ask(X: str, e: list, bn):
 
+    # check if both parents aren't there CPT
+    # T.T.T
+    # incomplete lookups
+
     # X = str(X[0])  # first and only elem of list
     vars = list(bn.Variables.keys())
 
@@ -200,7 +204,7 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
     Vnode = vars[V]
     # print(f'{V = } : {rest = } : {Vnode = }')
 
-    if V in evidence.keys():
+    if V in evidence.keys():  # only go here if full CPT lookup possible ***
 
         row = ''  # create the cpt row now
         if len(vars[V].parents) > 0:
@@ -216,7 +220,7 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
     else: # no exact match found in cpt
         total = 0
         evidenceV = evidence.copy()
-        for domain_val in vars[V].domains:
+        for domain_val in vars[V].domains:  # loop through parent unknowns too
 
             row = ''  # create the cpt row now
             if len(vars[V].parents) > 0:
@@ -230,6 +234,9 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
             total += (cpt_prob * enumerate_all(vars=rest_dict, evidence=evidenceV, bayes_net=bayes_net))
 
         return total
+
+
+# loop through parent domain unknowns
 
 
 def print_output(Q_normalized):
