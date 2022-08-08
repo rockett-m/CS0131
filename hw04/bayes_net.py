@@ -134,23 +134,7 @@ class ProbDist:
             self.values.append(val)
         self.prob[val] = p
 
-    def normalize(self):
-        """Make sure the probabilities of all values sum to 1.
-        Returns the normalized distribution.
-        Raises a ZeroDivisionError if the sum of the values is 0."""
-        total = sum(self.prob.values())
-        if not np.isclose(total, 1.0):
-            for val in self.prob:
-                self.prob[val] /= total
-        return self
 
-    def show_approx(self, numfmt='{:.3g}'):
-        """Show the probabilities rounded and sorted by key, for the
-        sake of portable doctests."""
-        return ', '.join([('{}: ' + numfmt).format(v, p) for (v, p) in sorted(self.prob.items())])
-
-    def __repr__(self):
-        return "P({})".format(self.var_name)
 
 
 def normalize(dist):
@@ -163,30 +147,20 @@ def normalize(dist):
 
 
 def enumeration_ask(X: str, e: list, bn):
-
-    # check if both parents aren't there CPT
-    # T.T.T
-    # incomplete lookups
-
-    # X = str(X[0])  # first and only elem of list
-    vars = list(bn.Variables.keys())
-
+    # check if both parents aren't there CPT   # T.T.T   # incomplete lookups
+    # vars = list(bn.Variables.keys())
     evidence_dict = OrderedDict()
-    for i in e:
-        j = i.split(' = ')[0]  # 'Earthquake = T' => 'Earthquake'
+    for i in e:  # 'Earthquake = T' => 'Earthquake'
         evidence_dict[i.split(' = ')[0]] = i.split(' = ')[1]   # evidence_dict['Earthquake'] = 'T'
-
     assert X not in evidence_dict.keys(), "Query variable must be distinct from evidence"
-    Q = OrderedDict()
 
+    Q = OrderedDict()
     for xi in bn.Variables[X].domains:  # T, F
 
         evidence_dict[X] = xi  # 'Alarm' = 'T'  # add to dict
         Q[xi] = enumerate_all(vars=bn.Variables, evidence=evidence_dict, bayes_net=bn)  # Q['T'] = 0.001
 
-    Q_normalized = normalize(Q)  # {Q['T'] = 0.001, Q['F'] = 0.999}
-
-    return Q_normalized
+    return normalize(Q)  # {Q['T'] = 0.001, Q['F'] = 0.999}
 
 
 def enumerate_all(vars: dict, evidence: dict, bayes_net):
@@ -195,41 +169,41 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
 
     var_names = list(vars.keys())
     V, rest = var_names[0], var_names[1:]
+    Vnode = vars[V]
 
-    rest_dict = OrderedDict()
+    rest_dict = OrderedDict()  # n-1 length vs prior run
     for elem in rest:
         if elem in vars.keys():
             rest_dict.update({elem:vars[elem]})
-
-    Vnode = vars[V]
-    # print(f'{V = } : {rest = } : {Vnode = }')
+    print(f'{V = } : {rest = }')
 
     if V in evidence.keys():  # only go here if full CPT lookup possible ***
 
         row = ''  # create the cpt row now
-        if len(vars[V].parents) > 0:
-            for parent in vars[V].parents:  # ['Burglary', 'Earthquake']
+        if len(Vnode.parents) > 0:
+            for parent in Vnode.parents:  # ['Burglary', 'Earthquake']  # has to be added to ev set first
                 row += f'{evidence[parent]}.'  # T.
 
         row += evidence[V]  # 0.99  # exact cpt row match expected like 'T.T.T' = 0.99
         # if row in vars[V].big_cpt.keys():
-        cpt_prob =  vars[V].big_cpt[row]  # 'T.T.T' = 0.99
+        cpt_prob = Vnode.big_cpt[row]  # 'T.T.T' = 0.99
 
         return cpt_prob * enumerate_all(vars=rest_dict, evidence=evidence, bayes_net=bayes_net)
 
     else: # no exact match found in cpt
         total = 0
         evidenceV = evidence.copy()
-        for domain_val in vars[V].domains:  # loop through parent unknowns too
+        for domain_val in Vnode.domains:  # loop through parent unknowns too
 
+            evidenceV.update({Vnode.name:domain_val})
             row = ''  # create the cpt row now
-            if len(vars[V].parents) > 0:
-                for parent in vars[V].parents:  # ['Burglary', 'Earthquake']
+            if len(Vnode.parents) > 0:
+                for parent in Vnode.parents:  # ['Burglary', 'Earthquake']
                     row += f'{evidenceV[parent]}.'  # T.
 
             row += domain_val  # 0.99  # exact cpt row match expected like 'T.T.T' = 0.99
 
-            cpt_prob =  vars[V].big_cpt[row]  # 'T.T.T' = 0.99
+            cpt_prob = Vnode.big_cpt[row]  # 'T.T.T' = 0.99
 
             total += (cpt_prob * enumerate_all(vars=rest_dict, evidence=evidenceV, bayes_net=bayes_net))
 
@@ -237,7 +211,9 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
 
 
 # loop through parent domain unknowns
-
+"""
+Alarm | Burglary = T, Earthquake = T
+"""
 
 def print_output(Q_normalized):
 

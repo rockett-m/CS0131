@@ -349,10 +349,10 @@ class Model:
                     F.T.T : v = 0.29
                     F.T.F : v = 0.71
                     F.F.T : v = 0.001
-                    F.F.F : v = 0.999''')
+                    F.F.F : v = 0.999\n''')
         for key,val in self.Variables.items():
             print(f'{key = }')
             for k,v in val.big_cpt.items():
                 print(f'{k} : {v = }')
-
+            print()
 
