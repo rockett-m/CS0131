@@ -25,6 +25,14 @@ https://github.com/aimacode/aima-python/blob/master/probability4e.ipynb
 
 
 
+08/08/2022
+
+Burglary   works perfectly
+Data       works perfectly
+Sprinklers doesn't match sample output for most
+Books      doesn't match sample output
+
+
 B E A : Probability : Alarm
 T.T.T : v = 0.95
 T.T.F : v = 0.05

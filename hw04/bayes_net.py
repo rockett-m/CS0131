@@ -39,9 +39,6 @@ class Bayes_Net:
         # enumeration_ask(X=, evidence=, net=Model)  # calls self.Model.enumeration_all() inside
         # self.Model.print_cpt()
 
-
-
-
 def normalize(dist):
     "Normalize a {key: value} distribution so values sum to 1.0. Mutates dist and returns it."
     total = sum(dist.values())
@@ -95,7 +92,7 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
         row = ''  # create the cpt row now
         if len(Vnode.parents) > 0:
             for parent in Vnode.parents:  # ['Burglary', 'Earthquake']  # has to be added to ev set first
-                row += f'{evidence[parent]}.'  # T.
+                row += f'{evidence[parent]}__'  # T.
 
         row += evidence[V]  # 0.99  # exact cpt row match expected like 'T.T.T' = 0.99
         # print(f'if row {row}')
@@ -113,7 +110,7 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
             row = ''  # create the cpt row now
             if len(Vnode.parents) > 0:
                 for parent in Vnode.parents:  # ['Burglary', 'Earthquake']
-                    row += f'{evidenceV[parent]}.'  # T.
+                    row += f'{evidenceV[parent]}__'  # T.
 
             row += domain_val  # 0.99  # exact cpt row match expected like 'T.T.T' = 0.99
             # print(f'else row {row} : {V = } : {domain_val = }')

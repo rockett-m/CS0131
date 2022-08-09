@@ -16,9 +16,7 @@ class Variable_Node:
         self.children = []
         self.cond_prob_table = []
         self.verbose_cpt = []
-        self.tuple_cpt = []
         self.big_cpt = OrderedDict()
-        self.base_case = False
 
     def add_parents(self, parents: list):
         self.parents = parents
@@ -41,7 +39,7 @@ class Model:
 
         self.parse_cli()
         self.parse_input_file()
-        self.build_verbose_cpt()
+        # self.build_verbose_cpt()
         self.create_acyclic_graph()
 
         self.create_big_cpt()
@@ -72,7 +70,6 @@ class Model:
         with open(self.input_file, 'r') as fi:
             section = "Variables"
             iter_length = 0; count = 0; node_name = ''
-
             line_count = 0
             for line in fi:
                 line = line.strip()
@@ -96,8 +93,6 @@ class Model:
                     """
 
                     var = Variable_Node(name=fields[0], domain=fields[1:])
-
-                    if line_count == 0: var.base_case = True
 
                     self.Variables.update({var.name:var})
 
@@ -140,8 +135,9 @@ class Model:
                         # Burglary
                         node_name = fields[0]
                         if node_name in self.Variables.keys():
-                            node = self.Variables[node_name]
+                            node = self.Variables[node_name]  # should be    parent domain len * parent domain len * parent domain len
                             iter_length = pow(2, len(node.parents))  # table will have 2^n values with n being len of parent list
+                            print(f'{fields = } : {iter_length = }')
                         continue
 
                     if node_name != '':  # not nothing
@@ -160,6 +156,19 @@ class Model:
 
                 line_count += 1
 
+    def print_variable_dict(self):
+        for k,v in self.Variables.items():
+            # print(f'{k = } :\n{v = } : {v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }\n')
+            print(f'{k = } :\n{v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }')
+            print(f'{v.verbose_cpt = }\n')
+
+    def print_normal_cpt(self):
+        for k,v in self.Variables.items():
+            print(f'\n{k = }')
+            for line in v.cond_prob_table:
+                print(line)
+        print()
+
     def build_verbose_cpt(self):
 
         for k, v in self.Variables.items():
@@ -169,11 +178,9 @@ class Model:
 
             len_line = len(node.cond_prob_table[0])
             num_lines = len(node.cond_prob_table)
-
             # print(f'{len_line = }\t{num_lines = }')
-
+            # print(node.cond_prob_table.shape())
             new_table = []
-
             if num_lines == 1 and len_line == 1:
 
                 newline = []
@@ -185,10 +192,10 @@ class Model:
                 new_table.append(newline)
 
             else:
-
+                # print(f'{len_line = } : {num_lines = }')
                 for line in node.cond_prob_table:
                     newline = []
-
+                    # print(f'{line = }')
                     for iter in range(len(line)):
                         if iter != len_line - 1:
                             field = f'{node.parents[iter]} = {line[iter]}'  # "Earthquake = T"
@@ -201,20 +208,6 @@ class Model:
 
             node.update_verbose_cpt(new_table)
             self.Variables.update({node_name:node})
-
-    def print_variable_dict(self):
-        for k,v in self.Variables.items():
-            # print(f'{k = } :\n{v = } : {v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }\n')
-            print(f'{k = } :\n{v.name = } : {v.domains = } {v.parents = } : {v.cond_prob_table = }')
-            print(f'{v.base_case = }')
-            print(f'{v.verbose_cpt = }\n')
-
-    def print_normal_cpt(self):
-        for k,v in self.Variables.items():
-            print(f'\n{k = }')
-            for line in v.cond_prob_table:
-                print(line)
-        print()
 
     def print_verbose_cpt(self):
         for k,v in self.Variables.items():
@@ -237,14 +230,11 @@ class Model:
             node_name = k
             node = v
             if len(node.parents) > 0:
-
                 for parent in node.parents:
-
                     G.add_edge(parent, node_name)
 
                     # if self.debug:
                     #     print(f'{parent = }: {node.name = }')
-
         self.graph = G
 
     def display_graph(self):
@@ -279,35 +269,6 @@ class Model:
             print(f'{node = }') #: {node['object'] = }")        
         """
 
-    def convert_cpt_tuple(self):
-        for k,v in self.Variables.items():
-            new_cpt = {}
-            # print(f'{k = } : {v.cond_prob_table = }')
-
-            for line in v.cond_prob_table:
-                print(f'{line = }')
-                vals = line[:-1]
-                prob = line[-1]
-                result = []
-                for i in vals:
-                    print(f'{i = }')
-                    res = re.match(r"(.*)\b([TF0-9]+)\b(.*)", i)
-                    print(res)
-                    result.append(res.group(2))
-
-                print(f'\n{result = }')
-                index = tuple(vals)
-                # index.strip("'")
-                print(index)
-                new_cpt[index] = prob
-
-            v.tuple_cpt = new_cpt
-
-            print(f'{k = }')
-            for key, val in v.tuple_cpt.items():
-                print(key, val)
-            print(f'{v.tuple_cpt = }\n')
-
     def create_big_cpt(self):
 
         for node_name, node in self.Variables.items():
@@ -315,12 +276,13 @@ class Model:
             new_cpt = OrderedDict()
             # new_row_count = pow(2, len(node.parents))
 
-            for line in node.cond_prob_table:
+            for line in node.cond_prob_table:  # check node domain size to determine
+                print(f'{line = } : {node.domains = }')
                 key = ''
-                parents = line[:-1]
-                prob = line[-1]
+                parents = line[:-1]   # not true for books.txt
+                prob = line[-1]       # fix for books.txt (last 5 values are prob)
                 for i in parents:
-                    key += f'{i}.'
+                    key += f'{i}__'
 
                 count = 0
                 for d in node.domains:  # T, F
