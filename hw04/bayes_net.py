@@ -10,27 +10,24 @@ from utils import *
 from classes import *
 
 
-def prompt_user(bayes_net):
-    # global args
-    # prompt user for symbol until 'end' is typed
-    user_input = input()
-    user_input.strip()  # remove newline
+def parse_args(input_args):
+
     cond = []; args = []
 
-    fields = user_input.split(' | ')  # requires space between |
+    fields = input_args.strip()
+    fields = input_args.split(' | ')  # requires space between |
     if len(fields) == 2:
         cond = fields[-1].split(', ')
 
     args.insert(0, fields[0])
     args += cond
 
-    if user_input != "quit":
-        # bayes_net.calculate_probability(args)
-        # print(args, args[0], args[1:])
-        # Alarm | Burglary = T, Earthquake = T
-        return args[0], args[1:]
+    X, e = args[0], args[1:]
+
+    if input_args != "quit":
+        return X, e
     else:
-        sys.exit(f'{user_input}\n')
+        sys.exit(f'{input_args}\n')
 
 
 class Bayes_Net:
@@ -43,98 +40,6 @@ class Bayes_Net:
         # self.Model.print_cpt()
 
 
-    def calculate_probability(self, args: list):
-
-        print(f'{args = }')
-        var = args[0]
-
-        if len(args) == 1:
-            if var in self.Model.Variables.keys():
-                node = self.Model.Variables[var]
-
-                if len(node.parents) == 0:
-                    prob_true = 0.0
-                    for i in node.cond_prob_table:
-                        prob_true = float(i[0])
-
-                    print(f'P(T) = {prob_true}, P(F) = {1-prob_true}\n')
-
-                else:
-                    print(f'need to solve when parent len != 0')
-            else:
-                print(f'\n{var = } not found in conditional probability table\n')
-
-
-        elif len(args) == 2:  # P(X | Y) = P(X and Y)/P(Y)
-            cond = args[1]
-
-            if [var, cond] in self.Model.Variables.keys():
-                node = self.Model.Variables[var]
-
-                cond_prob = 0.0
-                for line in node.cond_prob_table:
-                    t_or_f = cond.split(' = ')[-1]
-                    if t_or_f == line[0]:
-                        cond_prob = line[1]
-                        continue
-
-                # if direct match of conditional prob, can calc var
-                location = 0
-                if cond in node.parents:
-                    location = node.parents.index(cond)
-
-            else:
-                print(f'\n{args = } not all found in conditional probability table\n')
-
-        elif len(args) == 3:
-            cond1 = args[1]; cond2 = args[2]
-
-            if [var, cond1, cond2] in self.Model.Variables.keys():
-                node = self.Model.Variables[var]
-
-            else:
-                print(f'\n{args = } not all found in conditional probability table\n')
-
-        else:
-            print(f'not found: {args = }\n')
-
-
-
-class ProbDist:
-    """A discrete probability distribution. You name the random variable
-    in the constructor, then assign and query probability of values.
-    # >>> P = ProbDist('Flip'); P['H'], P['T'] = 0.25, 0.75; P['H']
-    0.25
-    # >>> P = ProbDist('X', {'lo': 125, 'med': 375, 'hi': 500})
-    # >>> P['lo'], P['med'], P['hi']
-    (0.125, 0.375, 0.5)
-    """
-
-    def __init__(self, var_name='?', freq=None):
-        """If freq is given, it is a dictionary of values - frequency pairs,
-        then ProbDist is normalized."""
-        self.prob = {}
-        self.var_name = var_name
-        self.values = []
-        if freq:
-            for (v, p) in freq.items():
-                self[v] = p
-            self.normalize()
-
-    def __getitem__(self, val):
-        """Given a value, return P(value)."""
-        try:
-            return self.prob[val]
-        except KeyError:
-            return 0
-
-    def __setitem__(self, val, p):
-        """Set P(val) = p."""
-        if val not in self.values:
-            self.values.append(val)
-        self.prob[val] = p
-
-
 
 
 def normalize(dist):
@@ -144,6 +49,14 @@ def normalize(dist):
         dist[key] = dist[key] / total
         assert 0 <= dist[key] <= 1, "Probabilities must be between 0 and 1."
     return dist
+
+
+def print_output(Q_normalized):
+
+    output = ''
+    for k,v in Q_normalized.items():
+        output += f'P({k}) = {round(v, 3)}\t\t'
+    print(f'\n{output}\n')
 
 
 def enumeration_ask(X: str, e: list, bn):
@@ -175,7 +88,7 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
     for elem in rest:
         if elem in vars.keys():
             rest_dict.update({elem:vars[elem]})
-    print(f'{V = } : {rest = }')
+    # print(f'{V = } : {rest = }')
 
     if V in evidence.keys():  # only go here if full CPT lookup possible ***
 
@@ -185,6 +98,7 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
                 row += f'{evidence[parent]}.'  # T.
 
         row += evidence[V]  # 0.99  # exact cpt row match expected like 'T.T.T' = 0.99
+        # print(f'if row {row}')
         # if row in vars[V].big_cpt.keys():
         cpt_prob = Vnode.big_cpt[row]  # 'T.T.T' = 0.99
 
@@ -195,13 +109,14 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
         evidenceV = evidence.copy()
         for domain_val in Vnode.domains:  # loop through parent unknowns too
 
-            evidenceV.update({Vnode.name:domain_val})
+            evidenceV.update({V:domain_val})  # extend to add possible values
             row = ''  # create the cpt row now
             if len(Vnode.parents) > 0:
                 for parent in Vnode.parents:  # ['Burglary', 'Earthquake']
                     row += f'{evidenceV[parent]}.'  # T.
 
             row += domain_val  # 0.99  # exact cpt row match expected like 'T.T.T' = 0.99
+            # print(f'else row {row} : {V = } : {domain_val = }')
 
             cpt_prob = Vnode.big_cpt[row]  # 'T.T.T' = 0.99
 
@@ -210,75 +125,94 @@ def enumerate_all(vars: dict, evidence: dict, bayes_net):
         return total
 
 
-# loop through parent domain unknowns
-"""
-Alarm | Burglary = T, Earthquake = T
-"""
-
-def print_output(Q_normalized):
-
-    output = ''
-    for k,v in Q_normalized.items():
-        output += f'P({k}) = {round(v, 3)}\t\t'
-    print(f'\n{output}\n')
-
 if __name__ == "__main__":
 
     model = Model()
 
     bayes_net = Bayes_Net(model)
 
+    """ testing
+    burglary_test = [
+        "Burglary",
+        "JohnCalls | Alarm = T",
+        'Burglary | JohnCalls = T, MaryCalls = T',
+        'Alarm | Burglary = T',
+        'Alarm | Burglary = T, Earthquake = T',
+        'Alarm | Earthquake = F, Burglary = F',
+        'MaryCalls | Alarm = T',
+        'MaryCalls | Alarm = F',
+        'Burglary | Earthquake = T',
+        'Burglary | Earthquake = F',
+        'Burglary | Alarm = T',
+        'Burglary | Alarm = T, JohnCalls = F',
+        'JohnCalls | Burglary = T, Alarm = T',
+        'JohnCalls | Burglary = T, Earthquake = T, Alarm = T',
+    ]
+    for test in burglary_test:
+        X, e = parse_args(test)
+        Q_normalized = enumeration_ask(X=X, e=e, bn=bayes_net.Model)
+        print(test)
+        print_output(Q_normalized)
+    """
+
     while True:
 
-        X, e = prompt_user(bayes_net)
+        user_input = input()
+
+        X, e = parse_args(user_input)
 
         Q_normalized = enumeration_ask(X=X, e=e, bn=bayes_net.Model)
 
         print_output(Q_normalized)
 
-    # query = args[0] # evidence = args[1:]
+"""
+Alarm | Burglary = T, Earthquake = T
+"""
 
-    # Q_normalized = enumeration_ask(X='Alarm', e=['Burglary = T', 'Earthquake = T'], bn=bayes_net.Model)  # P(T) = 0.95		P(F) = 0.05
-    # Q_norm = enumeration_ask(X=['Alarm'], e=['Earthquake = F', 'Burglary = F'], bn=bayes_net.Model)  # P(T) = 0.001		P(F) = 0.999
-    # Q_norm = enumeration_ask(X=['Burglary'], e=['Alarm = T', 'JohnCalls = F'], bn=bayes_net.Model)  # P(T) = 0.001		P(F) = 0.999
-
-    # print_output(Q_normalized)
 
 
 
 
 """
+def calculate_probability(self, args: list):
 
-P(alarm | burglary) = P(alarm | burglary, earthquake = false) + P(alarm | burglary, earthquake = true)
+    var = args[0]; print(f'{args = }')
 
-P(john) = 0.9 * P(alarm)
-P(john) = 0.9  * P(alarm) = 0.9 * P(alarm| earthquake, burglarly)
-P(john) = p(john| alarm =true) + P(john| alarm = false)
-p(john) = 0.9 * p(alarm = true)_ + 0.05 * P(alarm=false)
+    if len(args) == 1:
+        if var in self.Model.Variables.keys():
+            node = self.Model.Variables[var]
+            if len(node.parents) == 0:
+                prob_true = 0.0
+                for i in node.cond_prob_table:
+                    prob_true = float(i[0])
+                print(f'P(T) = {prob_true}, P(F) = {1-prob_true}\n')
+            else:
+                print(f'need to solve when parent len != 0')
+        else:
+            print(f'\n{var = } not found in conditional probability table\n')
+    elif len(args) == 2:  # P(X | Y) = P(X and Y)/P(Y)
+        cond = args[1]
+        if [var, cond] in self.Model.Variables.keys():
+            node = self.Model.Variables[var]
+            cond_prob = 0.0
+            for line in node.cond_prob_table:
+                t_or_f = cond.split(' = ')[-1]
+                if t_or_f == line[0]:
+                    cond_prob = line[1]
+                    continue
+            # if direct match of conditional prob, can calc var
+            location = 0
+            if cond in node.parents:
+                location = node.parents.index(cond)
+        else:
+            print(f'\n{args = } not all found in conditional probability table\n')
 
+    elif len(args) == 3:
+        cond1 = args[1]; cond2 = args[2]
+        if [var, cond1, cond2] in self.Model.Variables.keys():
+            node = self.Model.Variables[var]
+        else:
+            print(f'\n{args = } not all found in conditional probability table\n')
+    else:
+        print(f'not found: {args = }\n')
 """
-
-
-# # def enumeration_all(self, vars, e):
-# def enumerate_all(self, e):
-#     vars = self.Variables
-#     number = 0
-#
-#     if len(vars) == 0:
-#         return 1.0
-#
-#     for V in vars:
-#         # if V is an evidence variable with value v in e
-#         if V:  # an evidence variable with value v in e
-#             # return P(v | parents(V )) × enumerate_all(REST(vars),e))
-#             probability = 0
-#             return probability
-#
-#         else:
-#             sum_v = 0
-#             # !v P(v | parents(V)) × enumerate_all(REST(vars), ev)
-#             # where ev is e extended with V = v
-#             return sum_v
-#
-#     return number
-

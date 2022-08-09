@@ -13,3 +13,35 @@ enurameration ask
 
     # https://github.com/MaxHalford/sorobn
 
+
+
+References
+https://deepnote.com/workspace/personal-workspace-cff3-f36aa021-0953-4a22-a82e-94dead4b2271/project/aima-python-d05ae41f-6800-4030-933f-995bc77a2021/%2Fprobability-4e.ipynb
+https://github.com/philferriere/aind-projects/blob/1d972f3d3c69dfb24a6c20718516e0113162c59c/planning/aimacode/probability.py#L166
+https://git.scc.kit.edu/iism-em/iadt-aima-python/-/blob/master/probability.py
+https://github.com/MaxHalford/sorobn/blob/master/sorobn/bayes_net.py
+https://github.com/aimacode/aima-pseudocode/blob/master/md/Enumeration-Ask.md
+https://github.com/aimacode/aima-python/blob/master/probability4e.ipynb
+
+
+
+B E A : Probability : Alarm
+T.T.T : v = 0.95
+T.T.F : v = 0.05
+T.F.T : v = 0.94
+T.F.F : v = 0.06
+F.T.T : v = 0.29
+F.T.F : v = 0.71
+F.F.T : v = 0.001
+F.F.F : v = 0.999
+
+
+S R W : Probability : Wetgrass
+F.F.T : v = 1.0
+F.F.F : v = 0.0
+T.F.T : v = 0.1
+T.F.F : v = 0.9
+F.T.T : v = 0.1
+F.T.F : v = 0.9
+T.T.T : v = 0.01
+T.T.F : v = 0.99
