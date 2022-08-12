@@ -162,54 +162,6 @@ if __name__ == "__main__":
 
         print_output(Q_normalized)
 
-"""
+""" Test code
 Alarm | Burglary = T, Earthquake = T
-"""
-
-
-
-
-
-"""
-def calculate_probability(self, args: list):
-
-    var = args[0]; print(f'{args = }')
-
-    if len(args) == 1:
-        if var in self.Model.Variables.keys():
-            node = self.Model.Variables[var]
-            if len(node.parents) == 0:
-                prob_true = 0.0
-                for i in node.cond_prob_table:
-                    prob_true = float(i[0])
-                print(f'P(T) = {prob_true}, P(F) = {1-prob_true}\n')
-            else:
-                print(f'need to solve when parent len != 0')
-        else:
-            print(f'\n{var = } not found in conditional probability table\n')
-    elif len(args) == 2:  # P(X | Y) = P(X and Y)/P(Y)
-        cond = args[1]
-        if [var, cond] in self.Model.Variables.keys():
-            node = self.Model.Variables[var]
-            cond_prob = 0.0
-            for line in node.cond_prob_table:
-                t_or_f = cond.split(' = ')[-1]
-                if t_or_f == line[0]:
-                    cond_prob = line[1]
-                    continue
-            # if direct match of conditional prob, can calc var
-            location = 0
-            if cond in node.parents:
-                location = node.parents.index(cond)
-        else:
-            print(f'\n{args = } not all found in conditional probability table\n')
-
-    elif len(args) == 3:
-        cond1 = args[1]; cond2 = args[2]
-        if [var, cond1, cond2] in self.Model.Variables.keys():
-            node = self.Model.Variables[var]
-        else:
-            print(f'\n{args = } not all found in conditional probability table\n')
-    else:
-        print(f'not found: {args = }\n')
 """
