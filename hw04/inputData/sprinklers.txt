@@ -16,7 +16,7 @@ Rain
 T 0.8
 F 0.2
 WetGrass
-F F 1.0
+T T 1.0
 T F 0.1
 F T 0.1
-T T 0.01
+F F 0.01

@@ -136,7 +136,19 @@ class Model:
                         node_name = fields[0]
                         if node_name in self.Variables.keys():
                             node = self.Variables[node_name]  # should be    parent domain len * parent domain len * parent domain len
-                            iter_length = pow(2, len(node.parents))  # table will have 2^n values with n being len of parent list
+                            # iter_length = pow(2, len(node.parents))  # table will have 2^n values with n being len of parent list
+                            iter_length = 0
+                            for node_parent in node.parents:
+                                lnp = len(node_parent)
+                                # iter_length += pow(2, lnp)
+
+                                for domain_node_parent in self.Variables[node_parent].domains:
+                                    iter_length += 1
+                                # print(f'{self.Variables[node_parent].domains = }')
+                                # npd = np.domains
+                                # lnpd = len(npd)
+                                # print(f'{lnpd = }')
+                            # iter_length = pow(2, len(node.parents))  # table will have 2^n values with n being len of parent list
                             print(f'{fields = } : {iter_length = }')
                         continue
 
@@ -241,33 +253,6 @@ class Model:
 
         nx.draw_networkx(self.graph)
         plt.show()
-
-
-# create BST of vars
-# adjacency lists
-#     https://www.pythonpool.com/adjacency-list-python/
-# for each node, which nodes are direct path
-
-    # def enumeration_ask(self, X, e, bn):
-    # def enumeration_ask(self, X, e):
-    #     # bn = self.
-    #     for parent, child in self.graph.edges:
-    #         print(f'{parent = } : {child = }')
-    #         # print(f'{edge = }')
-    #         #
-            # parent = edge[0]
-            # child =  edge[1]
-
-
-        #     number = self.enumeration_all(vars, e)
-        #
-        # normalized_qx = normalize_qx()
-        # return normalized_qx
-
-        """
-        for node in self.graph:
-            print(f'{node = }') #: {node['object'] = }")        
-        """
 
     def create_big_cpt(self):
 
