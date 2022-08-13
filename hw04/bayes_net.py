@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
     bayes_net = Bayes_Net(model)
 
-    print(f'\nPRINTING big cpts:\n')
+    # print(f'\nPRINTING big cpts:\n')
 
     bayes_net.Model.print_big_cpt()
     """ testing
