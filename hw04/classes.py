@@ -138,17 +138,15 @@ class Model:
                             node = self.Variables[node_name]  # should be    parent domain len * parent domain len * parent domain len
                             # iter_length = pow(2, len(node.parents))  # table will have 2^n values with n being len of parent list
                             iter_length = 0
-                            for node_parent in node.parents:
-                                lnp = len(node_parent)
-                                # iter_length += pow(2, lnp)
 
-                                for domain_node_parent in self.Variables[node_parent].domains:
-                                    iter_length += 1
-                                # print(f'{self.Variables[node_parent].domains = }')
-                                # npd = np.domains
-                                # lnpd = len(npd)
-                                # print(f'{lnpd = }')
-                            # iter_length = pow(2, len(node.parents))  # table will have 2^n values with n being len of parent list
+                            for node_parent_name in node.parents:
+
+                                if iter_length == 0:
+                                    iter_length = len(self.Variables[node_parent_name].domains)
+                                else: # 2 * 5 * 5 for Honesty[2] * Quality[5] * Kindness[5] = 50 for Recommendation
+                                    iter_length *= len(self.Variables[node_parent_name].domains)
+                                print(f'ITER LENGTH {iter_length = }')
+
                             print(f'{fields = } : {iter_length = }')
                         continue
 
@@ -156,8 +154,40 @@ class Model:
                         # print(f'{node_name} : {iter_length = } : {count = }')
                         if node_name in self.Variables.keys():
                             node = self.Variables[node_name]
-                            node.update_cond_prob_table(fields)
-                            self.Variables.update({node.name:node})
+
+                            if len(fields) == 1:
+                                print(f'{fields = }')
+                                node.update_cond_prob_table(fields)
+                                self.Variables.update({node.name:node})
+
+                            elif len(fields) > 1:  # Quality -> 0.1 0.2 0.4 0.2
+
+                                probs_start = len(node.parents)
+                                probability = fields[probs_start:]
+
+                                summ = 0
+                                for i in probability:
+                                    try:
+                                        summ += float(i)
+                                    except:
+                                        print(f'ERROR {fields = }')
+                                final_field = str(round(1-summ, 3))
+                                fields.append(final_field)
+                                print(f'{fields = }')
+
+                                node.update_cond_prob_table(fields)
+                                self.Variables.update({node.name:node})
+
+                            # node = self.Variables[node_name]
+                            # node.update_cond_prob_table(fields)
+                            # self.Variables.update({node.name:node})
+                            """
+                            for k,v in self.Variables.items():
+                                print(f'\n{k = } : {v.domains = }')
+                                for line in v.cond_prob_table:
+                                    print(f'cpt {line = }')
+                            """
+
 
                         if iter_length == 0:  # case for just value listed   0.001
                             node_name = ''; count = 0; iter_length = 0
@@ -178,53 +208,6 @@ class Model:
         for k,v in self.Variables.items():
             print(f'\n{k = }')
             for line in v.cond_prob_table:
-                print(line)
-        print()
-
-    def build_verbose_cpt(self):
-
-        for k, v in self.Variables.items():
-
-            node_name = k
-            node = v
-
-            len_line = len(node.cond_prob_table[0])
-            num_lines = len(node.cond_prob_table)
-            # print(f'{len_line = }\t{num_lines = }')
-            # print(node.cond_prob_table.shape())
-            new_table = []
-            if num_lines == 1 and len_line == 1:
-
-                newline = []
-                field = f'{node_name} = T'
-                newline.append(field)
-
-                prob = v.cond_prob_table[0][0]
-                newline.append(prob)
-                new_table.append(newline)
-
-            else:
-                # print(f'{len_line = } : {num_lines = }')
-                for line in node.cond_prob_table:
-                    newline = []
-                    # print(f'{line = }')
-                    for iter in range(len(line)):
-                        if iter != len_line - 1:
-                            field = f'{node.parents[iter]} = {line[iter]}'  # "Earthquake = T"
-                            newline.append(field)
-                        else:
-                            field = f'{line[iter]}'
-                            newline.append(field)
-
-                    new_table.append(newline)
-
-            node.update_verbose_cpt(new_table)
-            self.Variables.update({node_name:node})
-
-    def print_verbose_cpt(self):
-        for k,v in self.Variables.items():
-            print(f'\n{k = }')
-            for line in v.verbose_cpt:
                 print(line)
         print()
 
@@ -257,49 +240,179 @@ class Model:
     def create_big_cpt(self):
 
         for node_name, node in self.Variables.items():
-
+            print(f'\nbig cpt init on {node_name = }')
             new_cpt = OrderedDict()
-            # new_row_count = pow(2, len(node.parents))
 
-            for line in node.cond_prob_table:  # check node domain size to determine
-                print(f'{line = } : {node.domains = }')
-                key = ''
-                parents = line[:-1]   # not true for books.txt
-                prob = line[-1]       # fix for books.txt (last 5 values are prob)
-                for i in parents:
-                    key += f'{i}__'
+            if len(node.domains) == 2:
+                for line in node.cond_prob_table:  # check node domain size to determine
+                    print(f'{line = } : {node.domains = }')
+                    key = ''
+                    parents = line[:-1]   # not true for books.txt
+                    prob = line[-1]       # fix for books.txt (last 5 values are prob)
+                    for i in parents:
+                        key += f'{i}__'
 
-                count = 0
-                for d in node.domains:  # T, F
-                    new_key = key
-                    new_key += f'{d}'
-                    if count == 0:
-                        new_cpt[new_key] = float(prob)
-                    else:
-                        new_cpt[new_key] = round(1 - float(prob), 3)
+                    count = 0
+                    for d in node.domains:  # T, F
+                        new_key = key
+                        new_key += f'{d}'
+                        if count == 0:
+                            new_cpt[new_key] = float(prob)
+                        else:
+                            new_cpt[new_key] = round(1 - float(prob), 3)
 
-                    count += 1
+                        count += 1
+
+            elif len(node.domains) > 2: # 5 for Quality, Kindness, Recommendation
+                print(f'domains > 2: {node.domains = }')
+
+                if len(node.parents) == 0:
+
+                    """
+                    key = 'Honesty'
+                    T : v = 0.8
+                    F : v = 0.2
+                    
+                    key = 'Quality'
+                    1 : v = 0.1
+                    2 : v = 0.2
+                    3 : v = 0.4
+                    4 : v = 0.2
+                    5 : v = 0.1
+                    """
+
+                    for line in node.cond_prob_table:  # check node domain size to determine
+                        print(f'long {line = }')
+
+                        # k = 'Kindness' :
+                        # v.domains = ['1', '2', '3', '4', '5']
+                        # cpt line = ['0.05', '0.1', '0.2', '0.5', '0.15']
+                        for domain, prob in zip(node.domains, line):
+                            new_cpt[domain] = float(prob)  # '1' = 0.05;  '2' = 0.1
+
+                elif len(node.parents) > 0:
+
+                    len_parents = len(node.parents)
+
+                    for line in node.cond_prob_table:
+
+                        prob_fields = line[len_parents:]
+
+                        print(f'deep cpt {line = }')
+                        key_str_common = '__'.join(line[0:len_parents])
+
+                        for domain, prob in zip(node.domains, prob_fields):
+                            key_str = f'{key_str_common}__{domain}'
+                            new_cpt[key_str] = float(prob)
 
             node.big_cpt = new_cpt
 
             self.Variables.update({node_name:node})
 
-        print(f'format:\tparents then child domain\texample: ')
+    def print_big_cpt(self):
+        print(f'\nformat:\tparents then child domain\texample: ')
         print(f'parent=Burglary, parent=Earthquake, child=Alarm')
         print(f'domains=T,F')
-        print(f'''key = 'Alarm'
-                    B E A : Probability
-                    T.T.T : v = 0.95
-                    T.T.F : v = 0.05
-                    T.F.T : v = 0.94
-                    T.F.F : v = 0.06
-                    F.T.T : v = 0.29
-                    F.T.F : v = 0.71
-                    F.F.T : v = 0.001
-                    F.F.F : v = 0.999\n''')
+        # print(f'''key = 'Alarm'
+        #             B E A : Probability
+        #             T.T.T : v = 0.95
+        #             T.T.F : v = 0.05
+        #             T.F.T : v = 0.94
+        #             T.F.F : v = 0.06
+        #             F.T.T : v = 0.29
+        #             F.T.F : v = 0.71
+        #             F.F.T : v = 0.001
+        #             F.F.F : v = 0.999\n''')
         for key,val in self.Variables.items():
             print(f'{key = }')
             for k,v in val.big_cpt.items():
-                print(f'{k} : {v = }')
+                print(f'{k = } : {v = }')
             print()
 
+
+"""
+H Q K      Prob
+T 1 1 1.0 0.0 0.0 0.0
+T 1 2 0.9 0.1 0.0 0.0
+T 1 3 0.8 0.1 0.1 0.0
+T 1 4 0.7 0.1 0.1 0.1
+T 1 5 0.6 0.125 0.125 0.125
+
+Honesty
+0.8
+Quality
+0.1 0.2 0.4 0.2
+Kindness
+0.05 0.1 0.2 0.5
+
+H Q K R      Prob
+T 1 1 1 1.0 0.0 0.0 0.0
+T 1 1 2 1.0 0.0 0.0 0.0
+T 1 1 3 1.0 0.0 0.0 0.0
+T 1 1 4 1.0 0.0 0.0 0.0
+T 1 1 5 0.0 1.0 1.0 1.0
+
+
+
+T 1 5 0.6 0.125 0.125 0.125
+
+\/
+
+T 1 5 1 0.6
+T 1 5 2 0.125
+T 1 5 3 0.125
+T 1 5 4 0.125
+T 1 5 5 = 1 - sum(1:4)
+
+
+"""
+
+
+"""
+def build_verbose_cpt(self):
+
+    for k, v in self.Variables.items():
+
+        node_name = k
+        node = v
+
+        len_line = len(node.cond_prob_table[0])
+        num_lines = len(node.cond_prob_table)
+        # print(f'{len_line = }\t{num_lines = }')
+        # print(node.cond_prob_table.shape())
+        new_table = []
+        if num_lines == 1 and len_line == 1:
+
+            newline = []
+            field = f'{node_name} = T'
+            newline.append(field)
+
+            prob = v.cond_prob_table[0][0]
+            newline.append(prob)
+            new_table.append(newline)
+
+        else:
+            # print(f'{len_line = } : {num_lines = }')
+            for line in node.cond_prob_table:
+                newline = []
+                # print(f'{line = }')
+                for iter in range(len(line)):
+                    if iter != len_line - 1:
+                        field = f'{node.parents[iter]} = {line[iter]}'  # "Earthquake = T"
+                        newline.append(field)
+                    else:
+                        field = f'{line[iter]}'
+                        newline.append(field)
+
+                new_table.append(newline)
+
+        node.update_verbose_cpt(new_table)
+        self.Variables.update({node_name:node})
+
+def print_verbose_cpt(self):
+    for k,v in self.Variables.items():
+        print(f'\n{k = }')
+        for line in v.verbose_cpt:
+            print(line)
+    print()
+"""
