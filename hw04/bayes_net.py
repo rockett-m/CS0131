@@ -4,8 +4,6 @@ import sys
 import re
 from collections import OrderedDict
 import numpy as np
-from functools import *
-from utils import *
 
 from classes import *
 
